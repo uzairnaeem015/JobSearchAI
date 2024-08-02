@@ -2,11 +2,13 @@ from fastapi import FastAPI
 from pydantic import BaseModel, HttpUrl
 from fastapi.middleware.cors import CORSMiddleware
 
-from services.jobsServices import LinkedInService
+from services.jobsServices import ScrapeJobs
 
 
 class searchJobRequest(BaseModel):
     job_title: str
+    job_type: str
+    location: str
 
 app = FastAPI()
 
@@ -22,7 +24,7 @@ app.add_middleware(
 @app.post("/search_jobs")
 def search_jobs(request: searchJobRequest):
     
-    processor = LinkedInService(request.job_title)
+    processor = ScrapeJobs(request.job_title, request.location, 2, 72)
 
     result = processor.retrieve_jobs(verbose = True)
 
