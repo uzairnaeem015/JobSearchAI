@@ -7,8 +7,9 @@ from services.jobsServices import ScrapeJobs
 
 class searchJobRequest(BaseModel):
     job_title: str
-    job_type: str
+    job_site: str
     location: str
+    page_size: str
 
 app = FastAPI()
 
@@ -24,7 +25,7 @@ app.add_middleware(
 @app.post("/search_jobs")
 def search_jobs(request: searchJobRequest):
     
-    processor = ScrapeJobs(request.job_title, request.location, 2, 72)
+    processor = ScrapeJobs(request.job_title, request.location, int(request.page_size), request.job_site,  24)
 
     result = processor.retrieve_jobs(verbose = True)
 

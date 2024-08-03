@@ -10,6 +10,7 @@ function JobListing({ job }) {
         <p><strong>Location:</strong> {job.location}</p>
         <p><strong>Remote:</strong> {job.is_remote ? 'Yes' : 'No'}</p>
         <p><strong>Job Type:</strong> {job.job_type}</p>
+        <p><strong>Source:</strong> {job.site}</p>
       </div>
       <div className="main-content">
         <p><strong>Date Posted:</strong> {new Date(job.date_posted).toLocaleDateString()}</p>

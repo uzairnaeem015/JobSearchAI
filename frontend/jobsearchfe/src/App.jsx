@@ -40,31 +40,48 @@ import React, { useState } from "react";
 import axios from "axios";
 import JobListing from "./JobList";
 import "./JobSearch.css";
+import Header from "./Header";
+import Footer from "./Footer";
+
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
+
+// import Home component
+import HomePage from "./Homepage";
 
 function App() {
   const [title, setTitle] = useState("");
-  const [jobType, setJobType] = useState("");
+  const [jobSite, setSiteType] = useState("");
   const [location, setLocation] = useState("");
+  const [pageSize, setPageSize] = useState("");
   const [responseData, setResponseData] = useState([]);
 
   const handleTitleChange = (event) => {
     setTitle(event.target.value);
   };
 
-  const handleJobTypeChange = (event) => {
-    setJobType(event.target.value);
+  const handleJobSiteChange = (event) => {
+    setSiteType(event.target.value);
   };
 
   const handleLocationChange = (event) => {
     setLocation(event.target.value);
   };
 
+  const handlePageSizeChange = (event) => {
+    setPageSize(event.target.value);
+  };
   const sendData = async () => {
     try {
       const response = await axios.post("http://localhost:8000/search_jobs", {
         job_title: title,
-        job_type: jobType,
+        job_site: jobSite,
         location: location,
+        page_size: pageSize
       });
       const data = response.data;
       const parseData = JSON.parse(data.result);
@@ -76,7 +93,8 @@ function App() {
   };
 
   return (
-    <div >
+    <div  className="App">
+      <Header />
       <div className="job-search-container" >
         <h1>Search for jobs</h1>
         <div className="search-fields">
@@ -87,16 +105,6 @@ function App() {
             onChange={handleTitleChange}
             className="search-input"
           />
-          <select
-            value={jobType}
-            onChange={handleJobTypeChange}
-            className="search-select"
-          >
-            <option value="">All Types</option>
-            <option value="Full-time">Full-time</option>
-            <option value="Part-time">Part-time</option>
-            <option value="Contract">Contract</option>
-          </select>
           <input
             type="text"
             placeholder="Location"
@@ -104,6 +112,23 @@ function App() {
             onChange={handleLocationChange}
             className="search-input"
           />
+          <input
+            type="text"
+            placeholder="Page size"
+            value={pageSize}
+            onChange={handlePageSizeChange}
+            className="search-input"
+          />
+          <select
+            value={jobSite}
+            onChange={handleJobSiteChange}
+            className="search-select"
+          >
+            <option value="">All Types</option>
+            <option value="Indeed">Indeed</option>
+            <option value="Glassdoor">Glassdoor</option>
+            <option value="LinkedIn">LinkedIn</option>
+          </select>
           <button onClick={sendData} className="search-button">
             Search Jobs
           </button>
@@ -114,6 +139,7 @@ function App() {
           <JobListing key={index} job={job} />
         ))}
       </div>
+      <Footer />
     </div>
   );
 }
