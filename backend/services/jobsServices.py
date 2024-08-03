@@ -19,7 +19,7 @@ class ScrapeJobs:
         logger.info(f"search_term {self.title}, location {self.location}")
 
         jobs = scrape_jobs(
-            site_name=["indeed", "linkedin", "glassdoor"], # "linkedin", "glassdoor", "indeed", "zip_recruiter"
+            site_name=["indeed"], # "linkedin", "glassdoor", "indeed", "zip_recruiter"
             search_term= self.title,
             location= self.location,
             results_wanted=self.page_size,
@@ -33,5 +33,7 @@ class ScrapeJobs:
         jobs = jobs.fillna('')
         logger.info(f"Found {len(jobs)} jobs")
         logger.info(jobs.head())
+
+        result = jobs.to_json(orient="table")
         # jobs.to_csv("jobs.csv", quoting=csv.QUOTE_NONNUMERIC, escapechar="\\", index=False) # to_excel
-        return jobs
+        return result
