@@ -1,0 +1,60 @@
+.job-listing-container {
+    display: flex;
+
+    border: 1px solid #ddd;
+    border-radius: 5px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    height: 500px; /* Adjust the height as needed */
+  }
+  
+  .sidebar {
+    flex: 1;
+    padding: 20px;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+    max-height: 100%;
+  }
+  
+  .sidebar-item {
+    cursor: pointer;
+    padding: 10px;
+    margin-bottom: 10px;
+    border: 1px solid transparent;
+    border-radius: 5px;
+  }
+  
+  .sidebar-item.active,
+  .sidebar-item:hover {
+    background-color: #0056b3;
+    background-color: #e9f5ff;
+  }
+  
+  .main-content {
+    flex: 3;
+    padding: 20px;
+    overflow-y: auto;
+  }
+  
+  h2 {
+    margin-top: 0;
+  }
+  
+  p {
+    margin: 10px 0;
+  }
+  
+  a {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 10px 20px;
+    background-color: #ffffff;
+    color: rgb(0, 0, 0);
+    text-decoration: none;
+    border-radius: 5px;
+  }
+  
+  a:hover {
+    background-color: #000000;
+  }
+  

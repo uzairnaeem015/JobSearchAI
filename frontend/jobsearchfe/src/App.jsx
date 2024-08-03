@@ -36,12 +36,10 @@ function App() {
 export default App
 
 */
-
-import React, {useState}  from "react";
-import axios from 'axios'
-import JobListing from './JobList';
-
-
+import React, { useState } from "react";
+import axios from "axios";
+import JobListing from "./JobList";
+import "./JobSearch.css";
 
 function App() {
   const [title, setTitle] = useState("");
@@ -61,65 +59,63 @@ function App() {
     setLocation(event.target.value);
   };
 
-  const handleDataChange = (event) => {
-    setTitle(event.target.value);
-  };
-
   const sendData = async () => {
-    try{
+    try {
       const response = await axios.post("http://localhost:8000/search_jobs", {
         job_title: title,
         job_type: jobType,
         location: location,
       });
       const data = response.data;
-      const parseData =  JSON.parse(data.result);
+      const parseData = JSON.parse(data.result);
       console.log(parseData);
       setResponseData(parseData.data);
-
-    }
-    catch (error){
+    } catch (error) {
       console.log(error);
     }
-
   };
 
   return (
-      <div className="App">
-        <h1> Search for jobs</h1>
-        <input 
-          type = "text"
-          placeholder="Title"
-          value= {title}
-          onChange={handleTitleChange}
+    <div >
+      <div className="job-search-container" >
+        <h1>Search for jobs</h1>
+        <div className="search-fields">
+          <input
+            type="text"
+            placeholder="Title"
+            value={title}
+            onChange={handleTitleChange}
+            className="search-input"
           />
-          <select value={jobType} onChange={handleJobTypeChange}>
+          <select
+            value={jobType}
+            onChange={handleJobTypeChange}
+            className="search-select"
+          >
             <option value="">All Types</option>
             <option value="Full-time">Full-time</option>
             <option value="Part-time">Part-time</option>
             <option value="Contract">Contract</option>
           </select>
-          <input 
-          type = "text"
-          placeholder="Location"
-          value= {location}
-          onChange={handleLocationChange}
+          <input
+            type="text"
+            placeholder="Location"
+            value={location}
+            onChange={handleLocationChange}
+            className="search-input"
           />
-          <button onClick={sendData}>
-          Search Jobs 
+          <button onClick={sendData} className="search-button">
+            Search Jobs
           </button>
-          <div>
-          <div>
-            
-          {responseData.map(job => 
-					  <JobListing key={job.index} job={job} />
-				  )}
-            
-          </div>
         </div>
-
       </div>
-  )
+      <div className="job-listings-container">
+        {responseData.map((job, index) => (
+          <JobListing key={index} job={job} />
+        ))}
+      </div>
+    </div>
+  );
 }
 
 export default App;
