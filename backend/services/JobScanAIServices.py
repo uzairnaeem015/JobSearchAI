@@ -11,6 +11,8 @@ logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
 class Doc2VecGensim:
+    # https://github.com/kirudang/CV-Job-matching/tree/main
+    # https://medium.com/@kirudang/job-resume-matching-part-1-2-obtaining-similarity-score-using-doc2vec-a6d07fe3b355
     def __init__(self, model_path = '../models/cv_job_maching.model'):
         self.model = Doc2Vec.load(model_path)
 
