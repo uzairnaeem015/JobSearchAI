@@ -1,8 +1,17 @@
 import logging
 
+
+from services.JobScanAIServices import Doc2VecGensim
+from services.PDFHelper import PDF;
+
 # configure logs
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
+
+# import os
+# import sys
+# sys.path.append(os.path.abspath(''))
+# sys.path.append(os.path.abspath('./services/'))
 
 class ScrapeJobs:
     def __init__(self, title, location, page_size, site, hours_old):
@@ -16,6 +25,8 @@ class ScrapeJobs:
        
         from jobspy import scrape_jobs
         import csv
+
+        model1 = Doc2VecGensim('./models/cv_job_maching.model')
 
         logger.info(f"search_term {self.title}, location {self.location}")
 
@@ -40,6 +51,20 @@ class ScrapeJobs:
             
         )
         jobs = jobs.fillna('')
+
+        pdf = PDF()
+        resume_content = pdf.getResumeContent(path = 'C:\\Users\\uzair\\OneDrive\\Desktop\\CV\\June 2024\\Uzair Naeem.pdf');
+
+        # model1 = Doc2VecGensim('../models/cv_job_maching.model')
+
+        similarity = [] 
+        # Iterate through each row and calculate the new column value
+        for index, row in jobs.iterrows():
+            sim_score = model1.check_similarity(resume_content, row['description']) 
+            similarity.append(sim_score)
+        
+        jobs['Similarity_score_Gensim'] = similarity
+
         logger.info(f"Found {len(jobs)} jobs")
         logger.info(jobs.head())
 

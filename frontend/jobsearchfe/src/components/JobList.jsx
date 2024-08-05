@@ -8,7 +8,7 @@ function JobListing({ job }) {
   const [showFullDescription, setShowFullDescription] = useState(false);
 
   let description = job.description;
-  const sanitizedDescription = DOMPurify.sanitize(description);
+  // const sanitizedDescription = DOMPurify.sanitize(description);
   if (!showFullDescription) {
     description = description.substring(0, 300) + '...';
   }
@@ -41,9 +41,11 @@ function JobListing({ job }) {
           <p><strong>Source:</strong> {job.site}</p>
           <p><strong>Date Posted:</strong> {new Date(job.date_posted).toLocaleDateString()}</p>
         </div>
-
+        <div className='mb-6'>
+          <p><strong>Score:</strong> {job.Similarity_score_Gensim}</p>
+        </div>
         <div className='mb-5'>{description}</div>
-        <div dangerouslySetInnerHTML={{ __html: sanitizedDescription }} />
+        {/* <div dangerouslySetInnerHTML={{ __html: sanitizedDescription }} /> */}
         <button
           onClick={() => setShowFullDescription((prevState) => !prevState)}
           className='text-indigo-500 mb-5 hover:text-indigo-600'
