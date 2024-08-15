@@ -42,7 +42,7 @@ function JobListing({ job }) {
           <p><strong>Date Posted:</strong> {new Date(job.date_posted).toLocaleDateString()}</p>
         </div>
         <div className='mb-6'>
-          <p><strong>Score:</strong> {job.Similarity_score_Gensim}</p>
+          <p><strong>Similarity Score(Cosine):</strong> {job.Similarity_score_Gensim}</p>
         </div>
         <div className='mb-5'>{description}</div>
         {/* <div dangerouslySetInnerHTML={{ __html: sanitizedDescription }} /> */}

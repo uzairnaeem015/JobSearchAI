@@ -41,3 +41,14 @@ class Doc2VecGensim:
         similarity = 100*(np.dot(np.array(v1), np.array(v2))) / (norm(np.array(v1)) * norm(np.array(v2)))
         logging.info(round(similarity, 2))
         return round(similarity, 2)
+    
+
+class GoogleGemini:
+    def __init__(self):
+        self.model = ""
+        self.key = ""
+    
+
+    def job_similarity_score(self, job_desc, resume):
+    
+        return job_desc + resume

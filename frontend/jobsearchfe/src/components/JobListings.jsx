@@ -5,12 +5,22 @@ import JobListing from "./JobList";
 
 function JobListings() {
     const [title, setTitle] = useState("Software engineer");
-    const [jobSite, setSiteType] = useState("");
+    const [jobSite, setSiteType] = useState("All");
     const [location, setLocation] = useState("Dallas, TX");
     const [pageSize, setPageSize] = useState("2");
     const [responseData, setResponseData] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [file, setFile] = useState(null);
   
+    const handleFileChange = (event) => {
+      const selectedFile = event.target.files[0];
+      if (selectedFile && selectedFile.type === "application/pdf") {
+      setFile(selectedFile);
+      } else {
+        alert("Please upload a valid PDF file.");
+      }
+    };
+
     const handleTitleChange = (event) => {
       setTitle(event.target.value);
     };
@@ -29,9 +39,19 @@ function JobListings() {
     const sendData = async () => {
       try {
         
+        if (!file) {
+          alert("Please upload a PDF file before submitting.");
+          return;
+        }
+
         setLoading(true);
         const apiUrl = '/api/search_jobs';
 
+        if (jobSite == '')
+        {
+          setSiteType('All');
+        }
+        console.log(jobSite);
         if (title == '')
         {
           setTitle('Software engineer');
@@ -45,16 +65,33 @@ function JobListings() {
           setPageSize('2');
         }
 
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("job_title", title);
+        formData.append("job_site", jobSite);
+        formData.append("location", location);
+        formData.append("page_size", pageSize);
+
+        const response = await fetch(apiUrl, {
+          method: "POST",
+          body: formData
+        });
+        /*
         const response = await axios.post(apiUrl, {
           job_title: title,
           job_site: jobSite,
           location: location,
           page_size: pageSize
         });
-        const data = response.data;
-        const parseData = JSON.parse(data.result);
-        console.log(parseData);
-        setResponseData(parseData.data);
+        */
+        const res = await response.json();
+        console.log(res);
+        
+        // const data = result;
+        // const parseData = JSON.parse(result);
+        // console.log(parseData);
+        setResponseData(res.result);
+        console.log(responseData);
       } catch (error) {
         console.log(error);
       }
@@ -117,6 +154,19 @@ function JobListings() {
                 <option value="LinkedIn">LinkedIn</option>
               </select>
               <br/>
+              <br/>
+              <div className="flex flex-col items-start space-y-2">
+                <label htmlFor="pdf-upload" className='block text-gray-700 font-bold mb-2'>
+                  Select Resume:
+                </label>
+                <input
+                  type="file"
+                  id="pdf-upload"
+                  accept="application/pdf"
+                  onChange={handleFileChange}
+                  className="file:bg-blue-500 file:text-white file:py-2 file:px-4 file:rounded-md file:border-none file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
               <br/>
               <button onClick={sendData} className='bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline'>
                 Search Jobs

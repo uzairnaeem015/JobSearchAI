@@ -21,7 +21,7 @@ class ScrapeJobs:
         self.hours_old = hours_old
         self.site = site
     
-    def retrieve_jobs(self, verbose = False):
+    def retrieve_jobs(self, resume_content, verbose = False):
        
         from jobspy import scrape_jobs
         import csv
@@ -32,7 +32,7 @@ class ScrapeJobs:
 
         fetch_linkedin_description = False;
 
-        if self.site == '': 
+        if self.site == '' or self.site == 'All': 
             self.site = ["linkedin", "glassdoor", "indeed"]
             fetch_linkedin_description = True
         elif self.site == 'LinkedIn':
@@ -52,8 +52,8 @@ class ScrapeJobs:
         )
         jobs = jobs.fillna('')
 
-        pdf = PDF()
-        resume_content = pdf.getResumeContent(path = 'C:\\Users\\uzair\\OneDrive\\Desktop\\CV\\June 2024\\Uzair Naeem.pdf');
+        # pdf = PDF()
+        # resume_content = pdf.getResumeContent(path = 'C:\\Users\\uzair\\OneDrive\\Desktop\\CV\\June 2024\\Uzair Naeem.pdf');
 
         # model1 = Doc2VecGensim('../models/cv_job_maching.model')
 
@@ -68,6 +68,8 @@ class ScrapeJobs:
         logger.info(f"Found {len(jobs)} jobs")
         logger.info(jobs.head())
 
-        result = jobs.to_json(orient="table")
+        # result = jobs.to_json(orient="table")
+
+        result = jobs.to_dict(orient="records")
         # jobs.to_csv("jobs.csv", quoting=csv.QUOTE_NONNUMERIC, escapechar="\\", index=False) # to_excel
         return result

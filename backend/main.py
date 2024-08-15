@@ -1,15 +1,22 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, File, UploadFile, Form
 from pydantic import BaseModel, HttpUrl
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+import shutil
+
 
 from services.jobsServices import ScrapeJobs
-
+from services.PDFHelper import PDF;
+from services.JobScanAIServices import GoogleGemini
 
 class searchJobRequest(BaseModel):
     job_title: str
     job_site: str
     location: str
     page_size: str
+
+class JobScoreDetail(BaseModel):
+    job_description: str
 
 app = FastAPI()
 
@@ -22,12 +29,36 @@ app.add_middleware(
 )
 
 
-@app.post("/search_jobs")
-def search_jobs(request: searchJobRequest):
-    
-    processor = ScrapeJobs(request.job_title, request.location, int(request.page_size), request.job_site,  24)
+@app.post("/score_detail")
+async def upload_pdf(job_description: str = Form(...), file: UploadFile = File(...)):
+    # Check if the uploaded file is a PDF
+    if file.content_type != "application/pdf":
+        return JSONResponse(content={"message": "Only PDF files are allowed"}, status_code=400)
 
-    result = processor.retrieve_jobs(verbose = True)
+    pdf = PDF()
+    resume_content = pdf.readPDFContent(file.file)
+
+
+    google_gemini = GoogleGemini()
+
+    response = google_gemini.job_similarity_score(job_description, resume_content)
+
+    return {"Resume content": resume_content, "job_description + resume": response}
+
+
+@app.post("/search_jobs")
+def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: str = Form(...), job_site: str = Form(...), file: UploadFile = File(...)):
+    
+    # Check if the uploaded file is a PDF
+    if file.content_type != "application/pdf":
+        return JSONResponse(content={"message": "Only PDF files are allowed"}, status_code=400)
+    
+    pdf = PDF()
+    resume_content = pdf.readPDFContent(file.file)
+
+    processor = ScrapeJobs(job_title, location, int(page_size), job_site,  24)
+
+    result = processor.retrieve_jobs(resume_content, verbose = True)
 
     return {
         "result" : result

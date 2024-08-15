@@ -4,3 +4,4 @@ python-jobspy
 gensim
 pypdf
 pypdf2
+python-multipart

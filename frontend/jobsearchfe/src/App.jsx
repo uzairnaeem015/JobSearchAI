@@ -159,7 +159,7 @@ import {
 } from 'react-router-dom';
 import MainLayout from './layouts/MainLayout';
 import HomePage from './pages/HomePage';
-import JobsPage from './pages/JobsPage';
+import JobsScoreDetailPage from './pages/JobsPage';
 import NotFoundPage from './pages/NotFoundPage';
 // import JobPage, { jobLoader } from './pages/JobPage';
 // import AddJobPage from './pages/AddJobPage';
@@ -203,7 +203,7 @@ const App = () => {
     createRoutesFromElements(
       <Route path='/' element={<MainLayout />}>
         <Route index element={<HomePage />} />
-        <Route path='/jobs' element={<JobsPage />} />
+        <Route path='/jobScoreDetail' element={<JobsScoreDetailPage />} />
         {/* <Route path='/add-job' element={<AddJobPage addJobSubmit={addJob} />} /> */}
         {/* <Route
           path='/edit-job/:id'

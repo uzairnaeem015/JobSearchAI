@@ -23,11 +23,11 @@ const Navbar = () => {
                 <NavLink to='/' className={linkClass}>
                   Home
                 </NavLink>
-                <NavLink to='/jobs' className={linkClass}>
-                  Jobs
+                <NavLink to='/jobScoreDetail' className={linkClass}>
+                  Job score details with AI 
                 </NavLink>
-                <NavLink to='/Job-scan' className={linkClass}>
-                  Job Scan
+                <NavLink to='/about' className={linkClass}>
+                  About
                 </NavLink>
               </div>
             </div>
