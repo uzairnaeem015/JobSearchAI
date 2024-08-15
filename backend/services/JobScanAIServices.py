@@ -50,10 +50,13 @@ class Doc2VecGensim:
 
 class GoogleGemini:
     def __init__(self, model = "gemini-1.5-flash"):
-        self.model = model
+        self.key = "AIzaSyB6ILhvIU4K-b1WjLMoyMECVyffB0LZqGk"
+        genai.configure(api_key=self.key)
+        self.model = genai.GenerativeModel(model)
+
         # self.model = "gemini-1.5-pro"
         # todo set it in env variable or any other way
-        self.key = "AIzaSyB6ILhvIU4K-b1WjLMoyMECVyffB0LZqGk"
+        
 
         self.input_prompt ="""
         ### As a skilled Application Tracking System (ATS) with advanced knowledge in technology and data science, your role is to meticulously evaluate a candidate's resume based on the provided job description.
@@ -88,21 +91,27 @@ class GoogleGemini:
 
         """
 
-    def job_similarity_score(self, job_desc, resume):
+    def job_similarity_score(self, job_desc, resume,  verbose = False):
         jsonRes = ""
         try:
-            genai.configure(api_key=self.key)
-            model=genai.GenerativeModel(self.model)
+            
 
-            self.input_prompt.format(resume=resume, jd=job_desc)
-            response = model.generate_content(self.input_prompt)
+            input = self.input_prompt.format(resume=resume, jd=job_desc)
+            if verbose == True:
+                logging.info(input)
+
+            response = self.model.generate_content(input)
+
+            if verbose == True:
+                logging.info(response)
 
             response_text = response.text.replace("```json", '')
             response_text = response_text.replace("```", '')
             jsonRes = json.loads(response_text)
 
+
             # Convert the JSON String to a dictionary
-        except json.JSONDecodeError:
+        except :
             logging.error("some error occurred")
 
         return jsonRes

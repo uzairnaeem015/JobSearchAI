@@ -41,7 +41,7 @@ async def upload_pdf(job_description: str = Form(...), file: UploadFile = File(.
 
     google_gemini = GoogleGemini()
 
-    response = google_gemini.job_similarity_score(job_description, resume_content)
+    response = google_gemini.job_similarity_score(job_description, resume_content, verbose= False)
 
     return {"Gemini Result": response}
 
@@ -58,7 +58,7 @@ def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: 
 
     processor = ScrapeJobs(job_title, location, int(page_size), job_site,  24)
 
-    result = processor.retrieve_jobs(resume_content, verbose = True)
+    result = processor.retrieve_jobs(resume_content, verbose = False)
 
     return {
         "result" : result
