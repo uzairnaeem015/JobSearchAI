@@ -6,10 +6,11 @@ from numpy.linalg import norm
 
 import google.generativeai as genai
 
-import os
 import json
-
 import logging
+
+with open('config.json') as config_file:
+    config = json.load(config_file)
 
 # configure logs
 logging.basicConfig(level=logging.INFO)
@@ -50,7 +51,7 @@ class Doc2VecGensim:
 
 class GoogleGemini:
     def __init__(self, model = "gemini-1.5-flash"):
-        self.key = "AIzaSyB6ILhvIU4K-b1WjLMoyMECVyffB0LZqGk"
+        self.key = config.get('google_api_key')
         genai.configure(api_key=self.key)
         self.model = genai.GenerativeModel(model)
 

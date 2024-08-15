@@ -60,8 +60,8 @@ function JobScoreDetail() {
     };
 
       return (
-        <div className="App bg-gray-100 min-h-screen relative">
-            <div className="job-search-container bg-white p-8 rounded-lg shadow-lg w-full max-w-lg mx-auto mt-8">
+        <div className="App bg-gray-100 min-h-screen relative ">
+            <div className="job-search-container bg-white p-8 rounded-lg shadow-lg w-full max-w-7xl mx-auto mt-8">
                 <div className="text-center mb-6">
                     {/* <h1 className='text-4xl font-extrabold text-black sm:text-5xl md:text-6xl'>
                       Search for jobs
