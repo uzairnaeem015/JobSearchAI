@@ -39,7 +39,7 @@ async def upload_pdf(job_description: str = Form(...), file: UploadFile = File(.
     resume_content = pdf.readPDFContent(file.file)
 
 
-    google_gemini = GoogleGemini(model = "gemini-1.5-pro")
+    google_gemini = GoogleGemini()
 
     response = google_gemini.job_similarity_score(job_description, resume_content, verbose= False)
 
