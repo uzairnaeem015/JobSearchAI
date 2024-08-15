@@ -1,4 +1,4 @@
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from pydantic import BaseModel, HttpUrl
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
@@ -43,7 +43,7 @@ async def upload_pdf(job_description: str = Form(...), file: UploadFile = File(.
 
     response = google_gemini.job_similarity_score(job_description, resume_content)
 
-    return {"Resume content": resume_content, "job_description + resume": response}
+    return {"Gemini Result": response}
 
 
 @app.post("/search_jobs")

@@ -4,6 +4,11 @@ import pandas as pd
 import numpy as np
 from numpy.linalg import norm
 
+import google.generativeai as genai
+
+import os
+import json
+
 import logging
 
 # configure logs
@@ -44,11 +49,62 @@ class Doc2VecGensim:
     
 
 class GoogleGemini:
-    def __init__(self):
-        self.model = ""
-        self.key = ""
-    
+    def __init__(self, model = "gemini-1.5-flash"):
+        self.model = model
+        # self.model = "gemini-1.5-pro"
+        # todo set it in env variable or any other way
+        self.key = "AIzaSyB6ILhvIU4K-b1WjLMoyMECVyffB0LZqGk"
+
+        self.input_prompt ="""
+        ### As a skilled Application Tracking System (ATS) with advanced knowledge in technology and data science, your role is to meticulously evaluate a candidate's resume based on the provided job description.
+
+        ### Your evaluation will involve analyzing the resume for relevant skills, experiences, and qualifications that align with the job requirements. Look for key buzzwords and specific criteria outlined in the job description to determine the candidate's suitability for the position.
+
+        ### Provide a detailed assessment of how well the resume matches the job requirements, highlighting strengths, weaknesses, and any potential areas of concern. Offer constructive feedback on how the candidate can enhance their resume to better align with the job description and improve their chances of securing the position.
+
+        ### Your evaluation should be thorough, precise, and objective, ensuring that the most qualified candidates are accurately identified based on their resume content in relation to the job criteria.
+
+        ### Remember to utilize your expertise in technology and data science to conduct a comprehensive evaluation that optimizes the recruitment process for the hiring company. Your insights will play a crucial role in determining the candidate's compatibility with the job role.
+        resume={resume}
+
+        jd={jd}
+
+        ### Evaluation Output:
+        1. Calculate the percentage of match between the resume and the job description. Give a number and some explation
+        2. Identify any key keywords that are missing from the resume in comparison to the job description.
+        3. Offer specific and actionable tips to enhance the resume and improve its alignment with the job requirements.
+
+        You must respond as a JSON object with the following structure:
+
+        {{
+        "result": {{
+            "match_percentage": "<percentage>",
+            "missing_keywords": [ <keyword1>, <keyword2>  ],
+            "All_keywords_in_jd": [ <keyword1>, <keyword2>  ],
+            "All_keywords_in_resume": [ <keyword1>, <keyword2>  ],
+            "explanation": "<explanation>",
+            "enhancement_tips": [ <tip1>, <tip2>  ],
+        }}}}
+
+        """
 
     def job_similarity_score(self, job_desc, resume):
+        jsonRes = ""
+        try:
+            genai.configure(api_key=self.key)
+            model=genai.GenerativeModel(self.model)
+
+            self.input_prompt.format(resume=resume, jd=job_desc)
+            response = model.generate_content(self.input_prompt)
+
+            response_text = response.text.replace("```json", '')
+            response_text = response_text.replace("```", '')
+            jsonRes = json.loads(response_text)
+
+            # Convert the JSON String to a dictionary
+        except json.JSONDecodeError:
+            logging.error("some error occurred")
+
+        return jsonRes
+
     
-        return job_desc + resume
