@@ -103,11 +103,7 @@ function JobListings() {
     return (
       <div  className="App">
         <div className="job-search-container" >
-        <div className='text-center'>
-            {/* <h1 className='text-4xl font-extrabold text-black sm:text-5xl md:text-6xl'>
-              Search for jobs
-            </h1> */}
-          </div>
+
           <div className='container m-auto max-w-2xl py-24'>
             <div className='bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0'>
               <label className='block text-gray-700 font-bold mb-2'>
@@ -174,12 +170,14 @@ function JobListings() {
             </div>
           </div>
         </div>
-        {loading ? (<Spinner loading={loading} />) : 
-        (<div className='grid grid-cols-1 md:grid-cols-3 gap-6'>
-          {responseData.map((job, index) => (
-            <JobListing key={index} job={job} />
-          ))}
-        </div>
+        {loading ? (
+          <Spinner loading={loading} />
+        ) : (
+          <div className='bg-gray-100 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2'>
+            {responseData.map((job, index) => (
+              <JobListing key={index} job={job} />
+            ))}
+          </div>
         )}
       </div>
     );

@@ -45,7 +45,7 @@ class ScrapeJobs:
             results_wanted=self.page_size,
             hours_old= self.hours_old, # (only Linkedin/Indeed is hour specific, others round up to days old)
             country_indeed='USA',  # only needed for indeed / glassdoor
-
+            description_format= "html",
             linkedin_fetch_description = fetch_linkedin_description # get full description , direct job url , company industry and job level (seniority level) for linkedin (slower)
             # proxies=["208.195.175.46:65095", "208.195.175.45:65095", "localhost"],
             
