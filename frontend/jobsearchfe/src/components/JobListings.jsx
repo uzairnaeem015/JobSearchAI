@@ -173,7 +173,7 @@ function JobListings() {
         {loading ? (
           <Spinner loading={loading} />
         ) : (
-          <div className='bg-gray-100 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-2'>
+          <div className='bg-gray-100 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2'>
             {responseData.map((job, index) => (
               <JobListing key={index} job={job} />
             ))}
