@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Spinner from './Spinner';
+import { scroller } from 'react-scroll';
 import axios from "axios";
 import JobListing from "./JobList";
 
@@ -16,7 +17,12 @@ function JobListings() {
 
     useEffect(() => {
       if (responseData.length > 0 && resultsRef.current) {
-        resultsRef.current.scrollIntoView({ behavior: 'smooth' });
+        scroller.scrollTo('results', {
+          duration: 1000,
+          delay: 0,
+          smooth: 'easeInOutQuart',
+          offset: -100, // Adjust if necessary
+        });
       }
     }, [responseData]);
 
@@ -173,7 +179,7 @@ function JobListings() {
                   id="pdf-upload"
                   accept="application/pdf"
                   onChange={handleFileChange}
-                  className="file:bg-blue-500 file:text-white file:py-2 file:px-4 file:rounded-md file:border-none file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="file:bg-indigo-500 file:hover:bg-indigo-600 file:text-white file:py-2 file:px-4 file:rounded-full file:border-none file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <br/>
@@ -186,7 +192,7 @@ function JobListings() {
         {loading ? (
           <Spinner loading={loading} />
         ) : (
-          <div className='bg-gray-100 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2' ref={resultsRef}>
+          <div id="results" className='bg-gray-100 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2' ref={resultsRef}>
             {responseData.map((job, index) => (
               <JobListing key={index} job={job} />
             ))}
