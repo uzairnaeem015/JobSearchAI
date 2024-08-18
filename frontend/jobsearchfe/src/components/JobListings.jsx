@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Spinner from './Spinner';
 import axios from "axios";
 import JobListing from "./JobList";
@@ -12,6 +12,14 @@ function JobListings() {
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState(null);
   
+    const resultsRef = useRef(null); // Create a reference for the results section
+
+    useEffect(() => {
+      if (responseData.length > 0 && resultsRef.current) {
+        resultsRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
+    }, [responseData]);
+    
     const handleFileChange = (event) => {
       const selectedFile = event.target.files[0];
       if (selectedFile && selectedFile.type === "application/pdf") {
@@ -92,6 +100,11 @@ function JobListings() {
         // console.log(parseData);
         setResponseData(res.result);
         console.log(responseData);
+
+        // Scroll to the results section
+        if (resultsRef.current) {
+          resultsRef.current.scrollIntoView({ behavior: 'smooth' });
+        }
       } catch (error) {
         console.log(error);
       }
@@ -173,7 +186,7 @@ function JobListings() {
         {loading ? (
           <Spinner loading={loading} />
         ) : (
-          <div className='bg-gray-100 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2'>
+          <div className='bg-gray-100 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2' ref={resultsRef}>
             {responseData.map((job, index) => (
               <JobListing key={index} job={job} />
             ))}
