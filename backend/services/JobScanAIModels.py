@@ -12,9 +12,18 @@ import google.generativeai as genai
 
 import json
 import logging
+import os
 
-with open('config.json') as config_file:
-    config = json.load(config_file)
+API_KEY = os.environ.get("API_KEY_GOOGLE")
+
+if not API_KEY:
+    try:
+        with open("config.json") as config_file:
+            config = json.load(config_file)
+        API_KEY = config.get("API_KEY_GOOGLE")
+    except FileNotFoundError:
+        raise Exception("API key not found in environment variables or config file")
+
 
 # configure logs
 logging.basicConfig(level=logging.INFO)
@@ -95,8 +104,7 @@ class Doc2VecGensim:
 
 class GoogleGemini:
     def __init__(self, model = "gemini-1.5-flash"):
-        self.key = config.get('google_api_key')
-        genai.configure(api_key=self.key)
+        genai.configure(api_key=API_KEY)
         self.model = genai.GenerativeModel(model)
 
         # self.model = "gemini-1.5-pro"
