@@ -28,6 +28,9 @@ app.add_middleware(
     allow_headers =["*"],
 )
 
+@app.get("/")
+def read_root():
+    return {"Hello": "World"}
 
 @app.post("/score_detail")
 async def upload_pdf(job_description: str = Form(...), file: UploadFile = File(...)):
