@@ -98,6 +98,7 @@ function JobListings() {
           page_size: pageSize
         });
         */
+        setResponseData([]);
         const res = await response.json();
         console.log(res);
         
@@ -163,7 +164,7 @@ function JobListings() {
                 onChange={handleJobSiteChange}
                 className='border rounded w-full py-2 px-3'
               >
-                <option value="">All Types</option>
+                <option value="All">All Types</option>
                 <option value="Indeed">Indeed</option>
                 <option value="Glassdoor">Glassdoor</option>
                 <option value="LinkedIn">LinkedIn</option>
