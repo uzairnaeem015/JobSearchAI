@@ -19,7 +19,7 @@ function JobListings() {
         resultsRef.current.scrollIntoView({ behavior: 'smooth' });
       }
     }, [responseData]);
-    
+
     const handleFileChange = (event) => {
       const selectedFile = event.target.files[0];
       if (selectedFile && selectedFile.type === "application/pdf") {
@@ -117,7 +117,7 @@ function JobListings() {
       <div  className="App">
         <div className="job-search-container" >
 
-          <div className='container m-auto max-w-2xl py-24'>
+          <div className='container m-auto max-w-2xl py-8'>
             <div className='bg-white px-6 py-8 mb-4 shadow-md rounded-md border m-4 md:m-0'>
               <label className='block text-gray-700 font-bold mb-2'>
                 Title

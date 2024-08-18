@@ -56,7 +56,7 @@ def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: 
     pdf = PDF()
     resume_content = pdf.readPDFContent(file.file)
 
-    processor = ScrapeJobs(job_title, location, int(page_size), job_site,  24)
+    processor = ScrapeJobs(job_title, location, int(page_size), job_site,  72)
 
     result = processor.retrieve_jobs(resume_content, verbose = False)
 
