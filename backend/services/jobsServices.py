@@ -1,17 +1,12 @@
 import logging
 
-
-from services.JobScanAIServices import Doc2VecGensim
-from services.PDFHelper import PDF;
+from services.JobScanAIModels import Doc2VecGensim, Sentence_Transformer, CountAndTdfVector
+from Helper.TextHelper import TextPreprocessor
 
 # configure logs
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
-# import os
-# import sys
-# sys.path.append(os.path.abspath(''))
-# sys.path.append(os.path.abspath('./services/'))
 
 class ScrapeJobs:
     def __init__(self, title, location, page_size, site, hours_old):
@@ -24,11 +19,8 @@ class ScrapeJobs:
     def retrieve_jobs(self, resume_content, verbose = False):
        
         from jobspy import scrape_jobs
-        import csv
 
-        model1 = Doc2VecGensim('./models/cv_job_maching.model')
-
-        logger.info(f"search_term {self.title}, location {self.location}")
+        # logger.info(f"search_term {self.title}, location {self.location}")
 
         fetch_linkedin_description = False;
 
@@ -52,18 +44,42 @@ class ScrapeJobs:
         )
         jobs = jobs.fillna('')
 
-        # pdf = PDF()
-        # resume_content = pdf.getResumeContent(path = 'C:\\Users\\uzair\\OneDrive\\Desktop\\CV\\June 2024\\Uzair Naeem.pdf');
+        Doc2VecGensim_model = Doc2VecGensim('./models/cv_job_maching.model')
+        sentenceTransformer_model = Sentence_Transformer()
+        CountAndTdfVector_model = CountAndTdfVector()
 
-        # model1 = Doc2VecGensim('../models/cv_job_maching.model')
+        text_Preprocessor = TextPreprocessor()
 
-        similarity = [] 
+        resume_text_pre = text_Preprocessor.text_preprocess(resume_content)
+        resume_text_pre_processed = text_Preprocessor.remove_stopwords(resume_text_pre)
+
+        similarity_Doc2VecGensim_model = [] 
+        similarity_sentenceTransformer_model = [] 
+        similarity_CountVector_model = [] 
+        similarity_TdfVector_model = [] 
+
         # Iterate through each row and calculate the new column value
         for index, row in jobs.iterrows():
-            sim_score = model1.check_similarity(resume_content, row['description']) 
-            similarity.append(sim_score)
+            job_desc =  row['description']
+            job_desc_pre = text_Preprocessor.text_preprocess(job_desc)
+            job_desc_pre_processed = text_Preprocessor.remove_stopwords(job_desc_pre)
+
+            sim_score_1 = Doc2VecGensim_model.check_similarity(resume_text_pre_processed, job_desc_pre_processed) 
+            similarity_Doc2VecGensim_model.append(sim_score_1)
+
+            sim_score_2 = sentenceTransformer_model.check_similarity(resume_text_pre_processed, job_desc_pre_processed) 
+            similarity_sentenceTransformer_model.append(sim_score_2)
+
+            sim_score_3 = CountAndTdfVector_model.count_vectorize_similarity(resume_text_pre_processed, job_desc_pre_processed) 
+            similarity_CountVector_model.append(sim_score_3)
+
+            sim_score_4 = CountAndTdfVector_model.tfidf_similarity(resume_text_pre_processed, job_desc_pre_processed) 
+            similarity_TdfVector_model.append(sim_score_4)
         
-        jobs['Similarity_score_Gensim'] = similarity
+        jobs['Similarity_score_Gensim'] = similarity_Doc2VecGensim_model
+        jobs['similarity_sentenceTransformer'] = similarity_sentenceTransformer_model
+        jobs['similarity_CountVector'] = similarity_CountVector_model
+        jobs['similarity_TdfVector'] = similarity_TdfVector_model
 
         logger.info(f"Found {len(jobs)} jobs")
         logger.info(jobs.head())

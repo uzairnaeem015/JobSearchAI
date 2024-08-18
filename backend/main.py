@@ -7,7 +7,7 @@ import shutil
 
 from services.jobsServices import ScrapeJobs
 from services.PDFHelper import PDF;
-from services.JobScanAIServices import GoogleGemini
+from services.JobScanAIModels import GoogleGemini
 
 class searchJobRequest(BaseModel):
     job_title: str

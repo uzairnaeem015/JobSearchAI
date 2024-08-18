@@ -5,11 +5,12 @@ import Navbar from '../components/Navbar';
 
 const MainLayout = () => {
   return (
-    <>
-      <Navbar />
-      <Outlet />
-      <ToastContainer />
-    </>
+    <div className="flex flex-col min-h-screen">
+      <Navbar /> {/* Navbar always at the top */}
+      <main className="flex-1">
+        <Outlet /> {/* Renders the page-specific content */}
+      </main>
+    </div>
   );
 };
 export default MainLayout;

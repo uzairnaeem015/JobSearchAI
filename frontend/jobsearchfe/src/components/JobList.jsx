@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import DOMPurify from 'dompurify';
 
 function JobListing({ job }) {
-  
+  const [hover, setHover] = useState(false);
   const sanitizedDescription = DOMPurify.sanitize(job.description);
 
   const handleLinkClick = () => {
@@ -14,11 +14,15 @@ function JobListing({ job }) {
 
   // Determine color based on Similarity_score_Gensim
   const getScoreColor = (score) => {
-    if (score >= 70) return 'text-green-500';    // High similarity
-    if (score >= 40) return 'text-yellow-500';   // Moderate similarity
+    if (score >= 50) return 'text-green-500';    // High similarity
+    if (score >= 25) return 'text-yellow-500';   // Moderate similarity
     return 'text-red-500';                       // Low similarity
   };
-  const scoreColor = getScoreColor(job.Similarity_score_Gensim);
+
+  
+  const final_score = ((job.Similarity_score_Gensim + job.similarity_CountVector + job.similarity_TdfVector + job.similarity_sentenceTransformer)/4).toFixed(2);
+
+  const scoreColor = getScoreColor(final_score);
 
   return (
     <div className='bg-white rounded-xl shadow-md relative m-8'>
@@ -66,11 +70,24 @@ function JobListing({ job }) {
           <p><strong>Type:</strong> {job.job_type} </p>
           <p><strong>Date Posted:</strong> {new Date(job.date_posted).toLocaleDateString()}</p>
         </div>
-        <div className='mb-6'>
-          <div className={`font-bold ${scoreColor}`}>
-            <p><strong>Similarity Score (Cosine):</strong> {job.Similarity_score_Gensim}</p>
+        <div 
+            className='mb-6 relative'
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+          >
+            <div className={`font-bold ${scoreColor}`}>
+              <p><strong>Similarity Score:</strong> {final_score}</p>
+            </div>
+
+            {hover && (
+              <div className="absolute left-1/2 bottom-full mb-2 p-4 bg-gray-800 text-white border border-gray-600 rounded-lg shadow-lg transform -translate-x-1/2">
+                <p>Doc2Vec Genism: {job.Similarity_score_Gensim}</p>
+                <p>Count Vectorization: {job.similarity_CountVector}</p>
+                <p>TFIDF Vectorization: {job.similarity_TdfVector}</p>
+                <p>SentenceTransformer: {job.similarity_sentenceTransformer}</p>
+              </div>
+            )}
           </div>
-        </div>
         <div className='border border-gray-100 mb-5'></div>
         <div className='mb-5 h-96 overflow-y-auto'>
           <div

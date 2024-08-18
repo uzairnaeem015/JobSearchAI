@@ -1,7 +1,11 @@
-from gensim.models.doc2vec import Doc2Vec, TaggedDocument
-import re
 import pandas as pd
 import numpy as np
+from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
+from sentence_transformers import SentenceTransformer
+from sklearn.metrics.pairwise import cosine_similarity
+
+from gensim.models.doc2vec import Doc2Vec, TaggedDocument
+
 from numpy.linalg import norm
 
 import google.generativeai as genai
@@ -16,34 +20,74 @@ with open('config.json') as config_file:
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
+
+class Sentence_Transformer:
+    def __init__(self):
+        # Load pre-trained BERT model for sentence embeddings
+        self.model = SentenceTransformer('sentence-transformers/all-MiniLM-L6-v2')
+
+    def check_similarity(self, resume_text, job_desc):
+        # Sample sentences
+        sentences = [resume_text, job_desc]
+
+        # Generate embeddings
+        embeddings = self.model.encode(sentences)
+
+        # Calculate cosine similarity
+        similarity = cosine_similarity([embeddings[0]], [embeddings[1]])
+        return round(similarity[0][0]*100,2)
+        
+
+class CountAndTdfVector:
+    def __init__(self):
+        self.use_stop_words = False
+    
+    def count_vectorize_similarity(self, resume_text, job_desc):
+        documents = [resume_text, job_desc]
+
+        count_vectorizer = CountVectorizer()
+        
+        if self.use_stop_words == True:
+            count_vectorizer = CountVectorizer(stop_words="english")
+        
+        sparse_matrix = count_vectorizer.fit_transform(documents)
+        
+        doc_term_matrix = sparse_matrix.todense()
+        df = pd.DataFrame(
+        doc_term_matrix,
+        columns=count_vectorizer.get_feature_names_out(),
+        index=["resume_text", "job_desc"],
+        )
+        res = cosine_similarity(df, df)
+        return round(res[0][1]*100,2)
+    
+
+    def tfidf_similarity(self, resume_text, job_desc):
+        vectorizer = TfidfVectorizer()
+
+        if self.use_stop_words == True:
+            vectorizer = TfidfVectorizer(stop_words="english")
+
+        tfidf_matrix = vectorizer.fit_transform([resume_text, job_desc])
+
+        # Calculate cosine similarity
+        cosine_sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix)
+
+        return round(cosine_sim[0][1]*100,2)
+
+
 class Doc2VecGensim:
     # https://github.com/kirudang/CV-Job-matching/tree/main
     # https://medium.com/@kirudang/job-resume-matching-part-1-2-obtaining-similarity-score-using-doc2vec-a6d07fe3b355
     def __init__(self, model_path = '../models/cv_job_maching.model'):
         self.model = Doc2Vec.load(model_path)
 
-    def preprocess_text(self, text):
-        # Convert the text to lowercase
-        text = text.lower()
-        
-        # Remove punctuation from the text
-        text = re.sub('[^a-z]', ' ', text)
-        
-        # Remove numerical values from the text
-        text = re.sub(r'\d+', '', text)
-        
-        # Remove extra whitespaces
-        text = ' '.join(text.split())
-        
-        return text
 
 
     def check_similarity(self, resume_text, job_desc):
-        input_CV = self.preprocess_text(resume_text)
-        input_JD = self.preprocess_text(job_desc)
 
-        v1 = self.model.infer_vector(input_CV.split()) # Input of CV
-        v2 = self.model.infer_vector(input_JD.split()) # Input of JD
+        v1 = self.model.infer_vector(resume_text.split()) # Input of CV
+        v2 = self.model.infer_vector(job_desc.split()) # Input of JD
         similarity = 100*(np.dot(np.array(v1), np.array(v2))) / (norm(np.array(v1)) * norm(np.array(v2)))
         logging.info(round(similarity, 2))
         return round(similarity, 2)
