@@ -59,7 +59,8 @@ function JobListings() {
         }
 
         setLoading(true);
-        const apiUrl = '/api/search_jobs';
+        const api_url = import.meta.env.VITE_API_URL;
+        const apiUrl = api_url + '/search_jobs';
 
         if (jobSite == '')
         {

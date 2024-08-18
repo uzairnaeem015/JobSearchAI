@@ -39,7 +39,9 @@ function JobScoreDetail() {
       try {
 
         setLoading(true);
-        const apiUrl = '/api/score_detail';
+        
+        const api_url = import.meta.env.VITE_API_URL;
+        const apiUrl = api_url + '/score_detail';
 
         const response = await fetch(apiUrl, {
           method: "POST",
