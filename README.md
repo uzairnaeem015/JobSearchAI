@@ -11,6 +11,8 @@
 
 This tool is designed to streamline the job application process by providing similarity scores between job descriptions and resumes. Additionally, it leverages Google Gemini to offer insights on how to improve the resume to increase alignment with job postings. The project addresses the challenge of optimizing resumes for each job application efficiently, providing a free and effective alternative to paid online tools.
 
+You'll need to upload a PDF resume to perform the search, but rest assured, the resume is not stored anywhere and is only used to calculate the similarity score.
+
 ## Solution
 
 ### Challenges & Approach
