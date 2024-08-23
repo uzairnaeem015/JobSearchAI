@@ -105,8 +105,7 @@ class Doc2VecGensim:
 
 class GoogleGemini:
     def __init__(self, model = "gemini-1.5-flash", api_key_param = ""):
-
-        if api_key_param != "":
+        if  api_key_param is not None and api_key_param != "":
             genai.configure(api_key=api_key_param)
         else:
             genai.configure(api_key=API_KEY)
