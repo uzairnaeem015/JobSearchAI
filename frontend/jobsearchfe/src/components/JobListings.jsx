@@ -14,7 +14,8 @@ function JobListings() {
     const [file, setFile] = useState(null);
   
     const resultsRef = useRef(null); // Create a reference for the results section
-
+    const fileInputRef = useRef(null);
+    
     useEffect(() => {
       if (responseData.length > 0 && resultsRef.current) {
         scroller.scrollTo('results', {
@@ -34,6 +35,7 @@ function JobListings() {
         alert("Please upload a valid PDF file.");
       }
     };
+    
 
     const handleTitleChange = (event) => {
       setTitle(event.target.value);
@@ -50,13 +52,21 @@ function JobListings() {
     const handlePageSizeChange = (event) => {
       setPageSize(event.target.value);
     };
+
+    const clearFileSelection = () => {
+      setFile(null); // Clear the file state
+      if (fileInputRef.current) {
+        fileInputRef.current.value = ''; // Clear the file input value
+      }
+    };
+
     const sendData = async () => {
       try {
         
-        if (!file) {
-          alert("Please upload a PDF file before submitting.");
-          return;
-        }
+        // if (!file) {
+        //   alert("Please upload a PDF file before submitting.");
+        //   return;
+        // }
 
         setLoading(true);
         const api_url = import.meta.env.VITE_API_URL;
@@ -81,7 +91,11 @@ function JobListings() {
         }
 
         const formData = new FormData();
-        formData.append("file", file);
+        if (file != null)
+        {
+          formData.append("file", file);
+          console.log("File")
+        }
         formData.append("job_title", title);
         formData.append("job_site", jobSite);
         formData.append("location", location);
@@ -173,16 +187,26 @@ function JobListings() {
               <br/>
               <br/>
               <div className="flex flex-col items-start space-y-2">
-                <label htmlFor="pdf-upload" className='block text-gray-700 font-bold mb-2'>
-                  Select Resume:
-                </label>
-                <input
-                  type="file"
-                  id="pdf-upload"
-                  accept="application/pdf"
-                  onChange={handleFileChange}
-                  className="file:bg-indigo-500 file:hover:bg-indigo-600 file:text-white file:py-2 file:px-4 file:rounded-full file:border-none file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
+                  <label htmlFor="pdf-upload" className='block text-gray-700 font-bold mb-2'>
+                    Select Resume:
+                  </label>
+                  <div className="flex items-center space-x-2">
+                    <input
+                      type="file"
+                      id="pdf-upload"
+                      accept="application/pdf"
+                      onChange={handleFileChange}
+                      ref={fileInputRef}
+                      className="file:bg-indigo-500 file:hover:bg-indigo-600 file:text-white file:py-2 file:px-4 file:rounded-full file:border-none file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <button
+                      type="button"
+                      onClick={clearFileSelection}
+                      className=""
+                    >
+                      Clear Selection
+                    </button>
+                  </div>
               </div>
               <br/>
               <button onClick={sendData} className='bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline'>

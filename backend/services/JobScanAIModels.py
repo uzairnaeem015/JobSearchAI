@@ -9,6 +9,7 @@ from gensim.models.doc2vec import Doc2Vec, TaggedDocument
 from numpy.linalg import norm
 
 import google.generativeai as genai
+from google.api_core.exceptions import InvalidArgument
 
 import json
 import logging
@@ -103,8 +104,12 @@ class Doc2VecGensim:
     
 
 class GoogleGemini:
-    def __init__(self, model = "gemini-1.5-flash"):
-        genai.configure(api_key=API_KEY)
+    def __init__(self, model = "gemini-1.5-flash", api_key_param = ""):
+
+        if api_key_param != "":
+            genai.configure(api_key=api_key_param)
+        else:
+            genai.configure(api_key=API_KEY)
         self.model = genai.GenerativeModel(model)
 
         # self.model = "gemini-1.5-pro"
@@ -121,6 +126,7 @@ class GoogleGemini:
         ### Your evaluation should be thorough, precise, and objective, ensuring that the most qualified candidates are accurately identified based on their resume content in relation to the job criteria.
 
         ### Remember to utilize your expertise in technology and data science to conduct a comprehensive evaluation that optimizes the recruitment process for the hiring company. Your insights will play a crucial role in determining the candidate's compatibility with the job role.
+        
         resume={resume}
 
         jd={jd}
@@ -129,6 +135,7 @@ class GoogleGemini:
         1. Calculate the percentage of match between the resume and the job description. Give a number and some explation
         2. Identify any key keywords that are missing from the resume in comparison to the job description.
         3. Offer specific and actionable tips to enhance the resume and improve its alignment with the job requirements.
+        4. Identify "Summary", "work history", and "project related descriptions" only and analyze with job description, also give a percentage score on each, and provide an optimized version that matches job description.
 
         You must respond as a JSON object with the following structure:
 
@@ -140,15 +147,15 @@ class GoogleGemini:
             "All_keywords_in_resume": [ <keyword1>, <keyword2>  ],
             "explanation": "<explanation>",
             "enhancement_tips": [ <tip1>, <tip2>  ],
+            "Analysis" : [ {{"original_line" : <line>, "optimized_line" : <optimizedline>, "line_score" : <score>,  }} ]
         }}}}
-
         """
 
     def job_similarity_score(self, job_desc, resume,  verbose = False):
         jsonRes = ""
         try:
             
-
+            response = ""
             input = self.input_prompt.format(resume=resume, jd=job_desc)
             if verbose == True:
                 logging.info(input)
@@ -162,9 +169,12 @@ class GoogleGemini:
             response_text = response_text.replace("```", '')
             jsonRes = json.loads(response_text)
 
-
+        except InvalidArgument as e:
+            logging.error(f"Invalid API key provided: {e}")
+            return "Invalid API key. Please pass a valid API key."
             # Convert the JSON String to a dictionary
         except :
+            logging.error(response)
             logging.error("some error occurred")
 
         return jsonRes

@@ -20,7 +20,12 @@ function JobListing({ job }) {
   };
 
   
-  const final_score = ((job.Similarity_score_Gensim + job.similarity_CountVector + job.similarity_TdfVector + job.similarity_sentenceTransformer)/4).toFixed(2);
+  let final_score = ((job.Similarity_score_Gensim + job.similarity_CountVector + job.similarity_TdfVector + job.similarity_sentenceTransformer)/4).toFixed(2);
+
+  if (final_score == 0)
+  {
+    final_score = "Upload Resume to check similarity score";
+  }
 
   const scoreColor = getScoreColor(final_score);
 

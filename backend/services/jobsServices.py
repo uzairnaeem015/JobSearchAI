@@ -16,11 +16,13 @@ class ScrapeJobs:
         self.hours_old = hours_old
         self.site = site
     
-    def retrieve_jobs(self, resume_content, verbose = False):
+    def retrieve_jobs(self, resume_content, remove_stopwords = False, verbose = False):
        
         from jobspy import scrape_jobs
 
         # logger.info(f"search_term {self.title}, location {self.location}")
+        if verbose:
+            logger.info(f"Resume {resume_content}")
 
         fetch_linkedin_description = False;
 
@@ -44,42 +46,55 @@ class ScrapeJobs:
         )
         jobs = jobs.fillna('')
 
-        Doc2VecGensim_model = Doc2VecGensim('./models/cv_job_maching.model')
-        sentenceTransformer_model = Sentence_Transformer()
-        CountAndTdfVector_model = CountAndTdfVector()
+        if resume_content:
+            Doc2VecGensim_model = Doc2VecGensim('./models/cv_job_maching.model')
+            sentenceTransformer_model = Sentence_Transformer()
+            CountAndTdfVector_model = CountAndTdfVector()
 
-        text_Preprocessor = TextPreprocessor()
+            text_Preprocessor = TextPreprocessor()
 
-        resume_text_pre = text_Preprocessor.text_preprocess(resume_content)
-        resume_text_pre_processed = text_Preprocessor.remove_stopwords(resume_text_pre)
+            resume_text_pre = text_Preprocessor.text_preprocess(resume_content)
+            if remove_stopwords:
+                resume_text_pre_processed = text_Preprocessor.remove_stopwords(resume_text_pre)
+            else:
+                resume_text_pre_processed = resume_text_pre
 
-        similarity_Doc2VecGensim_model = [] 
-        similarity_sentenceTransformer_model = [] 
-        similarity_CountVector_model = [] 
-        similarity_TdfVector_model = [] 
+            similarity_Doc2VecGensim_model = [] 
+            similarity_sentenceTransformer_model = [] 
+            similarity_CountVector_model = [] 
+            similarity_TdfVector_model = [] 
 
-        # Iterate through each row and calculate the new column value
-        for index, row in jobs.iterrows():
-            job_desc =  row['description']
-            job_desc_pre = text_Preprocessor.text_preprocess(job_desc)
-            job_desc_pre_processed = text_Preprocessor.remove_stopwords(job_desc_pre)
+            # Iterate through each row and calculate the new column value
+            for index, row in jobs.iterrows():
+                job_desc =  row['description']
+                job_desc_pre = text_Preprocessor.text_preprocess(job_desc)
+                job_desc_pre_processed = text_Preprocessor.remove_stopwords(job_desc_pre)
 
-            sim_score_1 = Doc2VecGensim_model.check_similarity(resume_text_pre_processed, job_desc_pre_processed) 
-            similarity_Doc2VecGensim_model.append(sim_score_1)
+                sim_score_1 = Doc2VecGensim_model.check_similarity(resume_text_pre_processed, job_desc_pre_processed) 
+                similarity_Doc2VecGensim_model.append(sim_score_1)
 
-            sim_score_2 = sentenceTransformer_model.check_similarity(resume_text_pre_processed, job_desc_pre_processed) 
-            similarity_sentenceTransformer_model.append(sim_score_2)
+                sim_score_2 = sentenceTransformer_model.check_similarity(resume_text_pre_processed, job_desc_pre_processed) 
+                similarity_sentenceTransformer_model.append(sim_score_2)
 
-            sim_score_3 = CountAndTdfVector_model.count_vectorize_similarity(resume_text_pre_processed, job_desc_pre_processed) 
-            similarity_CountVector_model.append(sim_score_3)
+                sim_score_3 = CountAndTdfVector_model.count_vectorize_similarity(resume_text_pre_processed, job_desc_pre_processed) 
+                similarity_CountVector_model.append(sim_score_3)
 
-            sim_score_4 = CountAndTdfVector_model.tfidf_similarity(resume_text_pre_processed, job_desc_pre_processed) 
-            similarity_TdfVector_model.append(sim_score_4)
+                sim_score_4 = CountAndTdfVector_model.tfidf_similarity(resume_text_pre_processed, job_desc_pre_processed) 
+                similarity_TdfVector_model.append(sim_score_4)
         
-        jobs['Similarity_score_Gensim'] = similarity_Doc2VecGensim_model
-        jobs['similarity_sentenceTransformer'] = similarity_sentenceTransformer_model
-        jobs['similarity_CountVector'] = similarity_CountVector_model
-        jobs['similarity_TdfVector'] = similarity_TdfVector_model
+            jobs['Similarity_score_Gensim'] = similarity_Doc2VecGensim_model
+            jobs['similarity_sentenceTransformer'] = similarity_sentenceTransformer_model
+            jobs['similarity_CountVector'] = similarity_CountVector_model
+            jobs['similarity_TdfVector'] = similarity_TdfVector_model
+        else:
+            row_count = len(jobs)
+            listofzeroes = [0] * row_count
+            jobs['Similarity_score_Gensim'] = listofzeroes
+            jobs['similarity_sentenceTransformer'] = listofzeroes
+            jobs['similarity_CountVector'] = listofzeroes
+            jobs['similarity_TdfVector'] = listofzeroes
+
+
 
         logger.info(f"Found {len(jobs)} jobs")
         logger.info(jobs.head())

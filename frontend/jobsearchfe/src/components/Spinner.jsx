@@ -4,7 +4,7 @@ const override = {
   display: 'block',
   position: 'fixed',
   top: '50%',
-  left: '46.5%',
+  left: '46%',
   transform: 'translate(-50%, -50%)',
   zIndex: 9999, // Ensure it's on top of other elements
 };

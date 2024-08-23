@@ -33,16 +33,19 @@ def read_root():
     return {"Hello": "World"}
 
 @app.post("/score_detail")
-async def upload_pdf(job_description: str = Form(...), file: UploadFile = File(...)):
+async def score_detail(job_description: str = Form(...), 
+                     model: str = Form(...), 
+                     api_key: str = Form(default=None), 
+                     file: UploadFile = File(...)):
+    
     # Check if the uploaded file is a PDF
-    if file.content_type != "application/pdf":
+    if file and file.content_type != "application/pdf":
         return JSONResponse(content={"message": "Only PDF files are allowed"}, status_code=400)
 
     pdf = PDF()
     resume_content = pdf.readPDFContent(file.file)
 
-
-    google_gemini = GoogleGemini()
+    google_gemini = GoogleGemini(model, api_key)
 
     response = google_gemini.job_similarity_score(job_description, resume_content, verbose= False)
 
@@ -50,18 +53,22 @@ async def upload_pdf(job_description: str = Form(...), file: UploadFile = File(.
 
 
 @app.post("/search_jobs")
-def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: str = Form(...), job_site: str = Form(...), file: UploadFile = File(...)):
+def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: str = Form(...), job_site: str = Form(...), file: UploadFile = File(None)):
     
     # Check if the uploaded file is a PDF
-    if file.content_type != "application/pdf":
+    if file and file.content_type != "application/pdf":
         return JSONResponse(content={"message": "Only PDF files are allowed"}, status_code=400)
     
     pdf = PDF()
-    resume_content = pdf.readPDFContent(file.file)
+
+    if file:
+        resume_content = pdf.readPDFContent(file.file)
+    else:
+        resume_content = ""
 
     processor = ScrapeJobs(job_title, location, int(page_size), job_site,  72)
 
-    result = processor.retrieve_jobs(resume_content, verbose = False)
+    result = processor.retrieve_jobs(resume_content, remove_stopwords= True, verbose = False)
 
     return {
         "result" : result

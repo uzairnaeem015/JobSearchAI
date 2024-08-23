@@ -6,6 +6,8 @@ import ResultComponent from "./ScoreDetailResponse";
 function JobScoreDetail() {
     const [file, setFile] = useState(null);
     const [text, setDescription] = useState("");
+    const [llm, setLLM] = useState("gemini-1.5-flash");
+    const [apiKey, setApiKey] = useState("");
     const [loading, setLoading] = useState(false);
     const [responseData, setData] = useState(null);
   
@@ -18,6 +20,13 @@ function JobScoreDetail() {
       }
     };
 
+    const handleApiKeyChange = (event) => {
+        setApiKey(event.target.value);
+    };
+
+    const handleLLMChange = (event) => {
+      setLLM(event.target.value);
+    };
 
     const handleTextChange = (event) => {
       setDescription(event.target.value);
@@ -32,9 +41,21 @@ function JobScoreDetail() {
         return;
       }
   
+      if (llm === "gemini-1.5-pro" && !apiKey) {
+        alert("Please enter an API key for Google Gemini Pro 1.5.");
+          return;
+      }
+      if (llm === "gemini-1.5-flash") {
+        setApiKey('');
+      }
+
       const formData = new FormData();
       formData.append("file", file);
       formData.append("job_description", text);
+      formData.append("model", llm);
+        if (llm === "gemini-1.5-pro") {
+            formData.append("api_key", apiKey);
+        }
   
       try {
 
@@ -82,6 +103,32 @@ function JobScoreDetail() {
                             onChange={handleFileChange}
                             className="file:bg-blue-500 file:text-white file:py-2 file:px-4 file:rounded-md file:border-none file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
+                    </div>
+                    <div>
+                      <select
+                        value={llm}
+                        onChange={handleLLMChange}
+                        className='border rounded w-full py-2 px-3'
+                      >
+                        <option value="gemini-1.5-flash">Google Gemini Flash 1.5</option>
+                        <option value="gemini-1.5-pro">Google Gemini Pro 1.5</option>
+                      </select>
+                    </div>
+                    <div>
+                    {llm === "gemini-1.5-pro" && (
+                        <div className="flex flex-col">
+                            <label htmlFor="api-key" className="block text-gray-700 font-bold mb-2">
+                                Enter API Key:
+                            </label>
+                            <input
+                                type="password"
+                                id="api-key"
+                                value={apiKey}
+                                onChange={handleApiKeyChange}
+                                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                            />
+                        </div>
+                    )}
                     </div>
                     <div className="flex flex-col">
                         <label htmlFor="text-box" className="block text-gray-700 font-bold mb-2">
