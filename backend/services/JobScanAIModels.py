@@ -134,7 +134,9 @@ class GoogleGemini:
         1. Calculate the percentage of match between the resume and the job description. Give a number and some explation
         2. Identify any key keywords that are missing from the resume in comparison to the job description.
         3. Offer specific and actionable tips to enhance the resume and improve its alignment with the job requirements.
-        4. Identify "Summary", "work history", and "project related descriptions" only and analyze with job description, also give a percentage score on each, and provide an optimized version that matches job description.
+        4. Identify "Summary", "work history", and "project related descriptions" only, and analyze with job description, also give a percentage score on each, and provide an optimized version that matches job description and enhancement tips.
+        5. Identify experience required for the job with each technology mentioned in the job description.
+        6. Identify the sponsorship requirement for this job. Company is open to hiring any type of visa? or Green card? or US citizen? or OPT?
 
         You must respond as a JSON object with the following structure:
 
@@ -146,7 +148,9 @@ class GoogleGemini:
             "All_keywords_in_resume": [ <keyword1>, <keyword2>  ],
             "explanation": "<explanation>",
             "enhancement_tips": [ <tip1>, <tip2>  ],
-            "Analysis" : [ {{"original_line" : <line>, "optimized_line" : <optimizedline>, "line_score" : <score>,  }} ]
+            "Analysis" : [ {{"original_line" : <line>, "optimized_line" : <optimizedline>, "line_score" : <score>,  }} ],
+            "experience_required" : [{{ "tech": <text> , "exp_required": <text> }}],
+            "sponosorship_status" : <text>
         }}}}
         """
 
@@ -171,7 +175,10 @@ class GoogleGemini:
         except InvalidArgument as e:
             logging.error(f"Invalid API key provided: {e}")
             return "Invalid API key. Please pass a valid API key."
-            # Convert the JSON String to a dictionary
+        
+        except json.JSONDecodeError as e:
+            print(f"Error parsing JSON: {e}")
+            jsonRes = response.text  # or handle the error as appropriate
         except :
             logging.error(response)
             logging.error("some error occurred")

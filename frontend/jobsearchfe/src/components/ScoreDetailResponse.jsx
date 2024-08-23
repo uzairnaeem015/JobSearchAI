@@ -2,6 +2,7 @@ import React from 'react';
 
 function ResultComponent({ data })  {
 
+    // empty data
     if (!data || !data["Gemini Result"]) {
         return (
             <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -10,6 +11,7 @@ function ResultComponent({ data })  {
             </div>
         );
     }
+    // data with invalid api key response
     if (data["Gemini Result"] == "Invalid API key. Please pass a valid API key.") {
         return (
             <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
@@ -21,6 +23,17 @@ function ResultComponent({ data })  {
     if (data == null)
         data = data_cons; 
     const { result } = data["Gemini Result"];
+
+    if (typeof result === String )
+    {
+        return (
+            <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">Gemini Result Analysis</h1>
+                <p className="text-lg text-red-600">Inavlid json response, here is the raw text</p>
+                <p className="text-gray-600">{result}</p>
+            </div>
+        );
+    }
 
     const highlightDifferences = (original, optimized) => {
         const originalWords = original.split(' ');
@@ -75,7 +88,29 @@ function ResultComponent({ data })  {
                     ))}
                 </ul>
             </div>
+
+            <div className="mb-6">
+                <h2 className="text-xl font-semibold text-gray-700">Experience required in each tech mentioned in the job description</h2>
+                <ul className="list-disc list-inside pl-5 space-y-2">
+                    {result.experience_required.map((exp, index) => (
+                        <li key={index} className="text-gray-600">
+                            <p>
+                                <strong>Tech:</strong> {exp.tech}
+                            </p>
+                            <p>
+                                <strong>Experience Required:</strong> {exp.exp_required}
+                            </p>
+                        </li>
+
+                    ))}
+                </ul>
+            </div>
            
+            <div className="mb-6">
+                <h2 className="text-xl font-semibold text-gray-700">Sponsorship requirement</h2>
+                <p className="text-gray-600">{result.sponosorship_status}</p>
+            </div>
+
             <div className="mb-6">
                 <h2 className="text-xl font-semibold text-gray-700">Missing Keywords</h2>
                 <ul className="list-disc list-inside pl-5 space-y-2">
