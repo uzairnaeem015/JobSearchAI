@@ -2,15 +2,18 @@ import React, { useState, useEffect } from 'react';
 import Spinner from './Spinner';
 import axios from "axios";
 import ResultComponent from "./ScoreDetailResponse";
+import { useEmailGlobalVariable } from './GlobalVariables';
 
-function JobScoreDetail() {
+
+function JobScoreDetail({ onResult }) {
     const [file, setFile] = useState(null);
     const [text, setDescription] = useState("");
     const [llm, setLLM] = useState("gemini-1.5-flash");
     const [apiKey, setApiKey] = useState("");
     const [loading, setLoading] = useState(false);
     const [responseData, setData] = useState(null);
-    const [email, setEmail] = useState("");
+   
+    const [emailGlobalVariable, setEmailGlobalVariable] = useEmailGlobalVariable('email', '');
 
     const handleFileChange = (event) => {
       const selectedFile = event.target.files[0];
@@ -23,7 +26,7 @@ function JobScoreDetail() {
 
     const handleEmailChange = (e) => {
       const value = e.target.value;
-      setEmail(value);
+      setEmailGlobalVariable(value);
 
     };
   
@@ -64,7 +67,7 @@ function JobScoreDetail() {
         if (llm === "gemini-1.5-pro") {
             formData.append("api_key", apiKey);
         }
-        formData.append("email", email);
+        formData.append("email", emailGlobalVariable);
 
       try {
 
@@ -80,8 +83,8 @@ function JobScoreDetail() {
   
         const result = await response.json();
         console.log(result);
-        setData(result);
-        
+        //setData(result);
+        onResult(result);
       } catch (error) {
         console.error("Error uploading file:", error);
         alert("Failed to upload file.");
@@ -92,13 +95,9 @@ function JobScoreDetail() {
     };
 
       return (
-        <div className="App bg-gray-100 min-h-screen relative ">
-            <div className="job-search-container bg-white p-8 rounded-lg shadow-lg w-full max-w-7xl mx-auto mt-8">
-                <div className="text-center mb-6">
-                    {/* <h1 className='text-4xl font-extrabold text-black sm:text-5xl md:text-6xl'>
-                      Search for jobs
-                    </h1> */}
-                </div>
+        <div className="App bg-gray-100 relative ">
+            <div className="job-search-container bg-white p-8 rounded-lg shadow-lg w-full max-w-7xl mx-auto">
+
                 <h2 className="text-lg font-semibold mb-4">Select a Resume in PDF format and paste job description</h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                     <div className="flex flex-col">
@@ -120,7 +119,7 @@ function JobScoreDetail() {
                       <input
                         placeholder="Enter email to save history"
                         type="email"
-                        value={email}
+                        value={emailGlobalVariable}
                         onChange={handleEmailChange}
                         className='border rounded w-full py-2 px-3 mb-2'
                       />
@@ -174,13 +173,16 @@ function JobScoreDetail() {
                     </div>
                 </form>
             </div>
-
-            <div className="mt-8">
+            
+            {/* <div className="mt-8">
                 {loading ? (
                     <Spinner loading={loading} />
                 ) : (
                     responseData && <ResultComponent data={responseData} />
                 )}
+            </div> */}
+            <div className="mt-8">
+                {loading && <Spinner loading={loading} />}
             </div>
         </div>
     );
