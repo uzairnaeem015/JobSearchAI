@@ -14,3 +14,7 @@ nltk
 scikit-learn
 sentence-transformers
 gunicorn
+
+pymongo
+dnspython
+python-dotenv

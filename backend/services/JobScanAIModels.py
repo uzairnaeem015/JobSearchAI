@@ -14,6 +14,10 @@ from google.api_core.exceptions import InvalidArgument
 import json
 import logging
 import os
+from dotenv import load_dotenv
+
+# Load environment variables from .env file
+load_dotenv()
 
 API_KEY = os.environ.get("API_KEY_GOOGLE")
 

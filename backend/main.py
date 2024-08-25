@@ -53,7 +53,7 @@ async def score_detail(job_description: str = Form(...),
 
 
 @app.post("/search_jobs")
-def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: str = Form(...), job_site: str = Form(...), file: UploadFile = File(None)):
+def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: str = Form(None), job_site: str = Form(...), scrape: bool = Form(None), last_id: str = Form(None), file: UploadFile = File(None)):
     
     # Check if the uploaded file is a PDF
     if file and file.content_type != "application/pdf":
@@ -66,9 +66,9 @@ def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: 
     else:
         resume_content = ""
 
-    processor = ScrapeJobs(job_title, location, int(page_size), job_site,  72)
-
-    result = processor.retrieve_jobs(resume_content, remove_stopwords= True, verbose = False)
+    processor = ScrapeJobs(job_title, location, int(page_size), job_site,  24)
+    
+    result = processor.retrieve_jobs(resume_content,  scrape, last_id,  remove_stopwords= True,  verbose = False)
 
     return {
         "result" : result
