@@ -152,5 +152,91 @@ class MongoDB:
         except Exception as e:
             logging.error(e)
             raise   e
+        
 
+    def insert_score_history(self, score_object, email, model):
+        try:
+            collection = self.db['jobscore']
+            
+            # Example: Insert a document into the collection
+            document = {"score_object": score_object, "email":  email, "model": model}
+            ret = collection.insert_one(document)
+
+            from datetime import datetime
+            current_datetime = datetime.now()
+
+            collection2 = self.db['userjobscorehistory']
+            
+            # Example: Insert a document into the collection
+            document2 = {"email": email, "job_score_id":  ret.inserted_id, "datetime": current_datetime}
+            collection2.insert_one(document2)
+
+        except Exception as e:
+            logging.error(e)
+
+
+    def fetch_score_history(self, email):
+        try:
+            collection = self.db['userjobscorehistory']
+
+            pipeline = [
+                {
+                    "$match": {
+                        "email": {"$eq": email}  # Match email 
+                    }
+                },
+                {
+                    "$sort": {
+                        "_id": -1  # Sort documents by _id in descending order
+                    }
+                },
+                {
+                    "$limit": 50  # Limit the number of results
+                }
+            ]
+
+
+            results = collection.aggregate(pipeline)
+            
+            docs_list = list(results)
+
+            # Convert the list of dictionaries to a pandas DataFrame
+            df = pd.DataFrame(docs_list)
+            #print(len(df))
+            df['orgid'] = df['_id'].astype(str)
+
+            # Drop the original '_id' column
+            df = df.drop(columns=['_id'])
+
+            return df
+
+        except Exception as e:
+            logging.error(e)
+            return pd.DataFrame()
+        
+
+    def fetch_score_by_id(self, id):
+        try:
+            collection = self.db['jobscore']
+            
+            obj_id = ObjectId(id)
+
+            pipeline = [
+                {
+                    "$match": {
+                        "_id": {"$eq": obj_id}  # Match id 
+                    }
+                },
+                {
+                    "$limit": 1  # Limit the number of results
+                }
+            ]
+
+            results = collection.aggregate(pipeline)
+            docs_list = list(results)
+            return docs_list[0]['score_object']
+
+        except Exception as e:
+            logging.error(e)
+            return ""
         

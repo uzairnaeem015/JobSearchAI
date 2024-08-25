@@ -10,7 +10,8 @@ function JobScoreDetail() {
     const [apiKey, setApiKey] = useState("");
     const [loading, setLoading] = useState(false);
     const [responseData, setData] = useState(null);
-  
+    const [email, setEmail] = useState("");
+
     const handleFileChange = (event) => {
       const selectedFile = event.target.files[0];
       if (selectedFile && selectedFile.type === "application/pdf") {
@@ -19,6 +20,13 @@ function JobScoreDetail() {
         alert("Please upload a valid PDF file.");
       }
     };
+
+    const handleEmailChange = (e) => {
+      const value = e.target.value;
+      setEmail(value);
+
+    };
+  
 
     const handleApiKeyChange = (event) => {
         setApiKey(event.target.value);
@@ -56,14 +64,15 @@ function JobScoreDetail() {
         if (llm === "gemini-1.5-pro") {
             formData.append("api_key", apiKey);
         }
-  
+        formData.append("email", email);
+
       try {
 
         setLoading(true);
         
         const api_url = import.meta.env.VITE_API_URL;
         const apiUrl = api_url + '/score_detail';
-
+        
         const response = await fetch(apiUrl, {
           method: "POST",
           body: formData
@@ -105,6 +114,22 @@ function JobScoreDetail() {
                         />
                     </div>
                     <div>
+                      <label className='block text-gray-700 font-bold mb-2'>
+                        Email
+                      </label>
+                      <input
+                        placeholder="Enter email to save history"
+                        type="email"
+                        value={email}
+                        onChange={handleEmailChange}
+                        className='border rounded w-full py-2 px-3 mb-2'
+                      />
+                      
+                    </div>
+                    <div>
+                      <label className='block text-gray-700 font-bold mb-2'>
+                        Model
+                      </label>
                       <select
                         value={llm}
                         onChange={handleLLMChange}

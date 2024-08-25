@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from services.DBService import MongoDB
 from sklearn.feature_extraction.text import CountVectorizer, TfidfVectorizer
 from sentence_transformers import SentenceTransformer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -113,7 +114,9 @@ class GoogleGemini:
             genai.configure(api_key=api_key_param)
         else:
             genai.configure(api_key=API_KEY)
+        self.model_name = model
         self.model = genai.GenerativeModel(model)
+        self.mongoDB = MongoDB()
 
         # self.model = "gemini-1.5-pro"
         # todo set it in env variable or any other way
@@ -158,7 +161,7 @@ class GoogleGemini:
         }}}}
         """
 
-    def job_similarity_score(self, job_desc, resume,  verbose = False):
+    def job_similarity_score(self, job_desc, resume, email,  verbose = False):
         jsonRes = ""
         try:
             
@@ -175,6 +178,9 @@ class GoogleGemini:
             response_text = response.text.replace("```json", '')
             response_text = response_text.replace("```", '')
             jsonRes = json.loads(response_text)
+
+            if email is not None or email != "":
+                self.mongoDB.insert_score_history(jsonRes, email, self.model_name)
 
         except InvalidArgument as e:
             logging.error(f"Invalid API key provided: {e}")

@@ -1,5 +1,5 @@
 import logging
-
+import pandas as pd
 from services.JobScanAIModels import Doc2VecGensim, Sentence_Transformer, CountAndTdfVector
 from Helper.TextHelper import TextPreprocessor
 
@@ -39,7 +39,7 @@ class ScrapeJobs:
         if scrape_latest_jobs is None:
             scrape_latest_jobs = False
             
-        import pandas as pd
+        
         jobs = pd.DataFrame()
 
         if(scrape_latest_jobs == True):

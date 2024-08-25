@@ -5,9 +5,12 @@ from fastapi.responses import JSONResponse
 import shutil
 
 
+
 from services.jobsServices import ScrapeJobs
 from services.PDFHelper import PDF;
 from services.JobScanAIModels import GoogleGemini
+from services.DBService import MongoDB
+
 
 class searchJobRequest(BaseModel):
     job_title: str
@@ -36,6 +39,7 @@ def read_root():
 async def score_detail(job_description: str = Form(...), 
                      model: str = Form(...), 
                      api_key: str = Form(default=None), 
+                     email: str = Form(default=None), 
                      file: UploadFile = File(...)):
     
     # Check if the uploaded file is a PDF
@@ -47,13 +51,18 @@ async def score_detail(job_description: str = Form(...),
 
     google_gemini = GoogleGemini(model, api_key)
 
-    response = google_gemini.job_similarity_score(job_description, resume_content, verbose= False)
+    response = google_gemini.job_similarity_score(job_description, resume_content,  email, verbose= False)
 
     return {"Gemini Result": response}
 
 
 @app.post("/search_jobs")
-def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: str = Form(None), job_site: str = Form(...), scrape: bool = Form(None), last_id: str = Form(None), file: UploadFile = File(None)):
+def search_jobs(job_title: str = Form(...),
+                location: str = Form(...), 
+                job_site: str = Form(...), 
+                scrape: bool = Form(None),  
+                last_id: str = Form(None), 
+                file: UploadFile = File(None)):
     
     # Check if the uploaded file is a PDF
     if file and file.content_type != "application/pdf":
@@ -66,10 +75,42 @@ def search_jobs(job_title: str = Form(...),location: str = Form(...),page_size: 
     else:
         resume_content = ""
 
-    processor = ScrapeJobs(job_title, location, int(page_size), job_site,  24)
+    processor = ScrapeJobs(job_title, location, 5, job_site,  24)
     
-    result = processor.retrieve_jobs(resume_content,  scrape, last_id,  remove_stopwords= True,  verbose = False)
+    result = processor.retrieve_jobs(resume_content, bool(scrape), last_id,  remove_stopwords= True,  verbose = False)
 
     return {
         "result" : result
+    }
+
+@app.post("/get_job_score_history_list")
+def get_job_score_history_list(email: str = Form(None)):
+    
+    if email is None or email == '': 
+        return {
+        "result" : "Invalid email"
+    } 
+
+    db = MongoDB()
+
+    response = db.fetch_score_history(email)
+
+    return {
+        "result" : response
+    }
+
+@app.post("/get_selected_job_score")
+def get_selected_job_score(id: str = Form(None)):
+    
+    if id is None or id == '': 
+        return {
+        "result" : "Invalid id"
+    } 
+
+    db = MongoDB()
+
+    response = db.fetch_score_by_id(id)
+
+    return {
+        "result" : response
     }

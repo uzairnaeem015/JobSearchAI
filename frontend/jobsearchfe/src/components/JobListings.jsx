@@ -8,11 +8,14 @@ function JobListings() {
     const [title, setTitle] = useState("Software engineer");
     const [jobSite, setSiteType] = useState("All");
     const [location, setLocation] = useState("Dallas, TX");
-    const [pageSize, setPageSize] = useState("2");
     const [responseData, setResponseData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState(null);
-  
+    const [scrapeChange, setScrapeChange] = useState("True");
+    const [lastRecordId, setLastRecordId] = useState(null);
+    const [hasMoreData, setHasMoreData] = useState(false);
+    
+
     const resultsRef = useRef(null); // Create a reference for the results section
     const fileInputRef = useRef(null);
     
@@ -36,7 +39,9 @@ function JobListings() {
       }
     };
     
-
+    const handleScrapeChange = (event) => {
+      setScrapeChange(event.target.value);
+    };
     const handleTitleChange = (event) => {
       setTitle(event.target.value);
     };
@@ -49,9 +54,6 @@ function JobListings() {
       setLocation(event.target.value);
     };
   
-    const handlePageSizeChange = (event) => {
-      setPageSize(event.target.value);
-    };
 
     const clearFileSelection = () => {
       setFile(null); // Clear the file state
@@ -60,14 +62,9 @@ function JobListings() {
       }
     };
 
-    const sendData = async () => {
+    const sendData = async (fetchMore = false) => {
       try {
         
-        // if (!file) {
-        //   alert("Please upload a PDF file before submitting.");
-        //   return;
-        // }
-
         setLoading(true);
         const api_url = import.meta.env.VITE_API_URL;
         const apiUrl = api_url + '/search_jobs';
@@ -85,10 +82,6 @@ function JobListings() {
         {
           setLocation('Dallas, TX');
         }
-        if (pageSize == '')
-        {
-          setPageSize('2');
-        }
 
         const formData = new FormData();
         if (file != null)
@@ -99,32 +92,45 @@ function JobListings() {
         formData.append("job_title", title);
         formData.append("job_site", jobSite);
         formData.append("location", location);
-        formData.append("page_size", pageSize);
+        formData.append("scrape", scrapeChange);
 
+        // Include lastRecordId if fetching more data
+        if (fetchMore && lastRecordId) {
+          formData.append("last_id", lastRecordId);
+        }
+        
         const response = await fetch(apiUrl, {
           method: "POST",
           body: formData
         });
-        /*
-        const response = await axios.post(apiUrl, {
-          job_title: title,
-          job_site: jobSite,
-          location: location,
-          page_size: pageSize
-        });
-        */
-        setResponseData([]);
+
+        //setResponseData();
         const res = await response.json();
+
+        // Append new data or replace existing data
+        if (fetchMore) {
+          setResponseData(prevData => [...prevData, ...res.result]);
+        } else {
+          setResponseData(res.result);
+        }
+          
+        // Update the lastRecordId and hasMoreData
+        if (res.result.length > 0) {
+          setLastRecordId(res.result[res.result.length - 1].orgid); // Assuming each job has an 'id'
+          setHasMoreData(res.result.length === 10);
+        } else {
+          setHasMoreData(false);
+        }
         console.log(res);
         
         // const data = result;
         // const parseData = JSON.parse(result);
         // console.log(parseData);
-        setResponseData(res.result);
+        // setResponseData(res.result);
         console.log(responseData);
 
         // Scroll to the results section
-        if (resultsRef.current) {
+        if (resultsRef.current && fetchMore == false) {
           resultsRef.current.scrollIntoView({ behavior: 'smooth' });
         }
       } catch (error) {
@@ -162,15 +168,17 @@ function JobListings() {
                 className='border rounded w-full py-2 px-3 mb-2'
               />
               <label className='block text-gray-700 font-bold mb-2'>
-                Page size
+                Scrape data from job listing sites
               </label>
-              <input
-                type="text"
-                placeholder="Page size"
-                value={pageSize}
-                onChange={handlePageSizeChange}
-                className='border rounded w-full py-2 px-3 mb-2'
-              />
+              <select
+                value={scrapeChange}
+                onChange={handleScrapeChange}
+                className='border rounded w-full py-2 px-3'
+              >
+                <option value="True">Yes</option>
+                <option value="False">No</option>
+              </select>
+
               <label className='block text-gray-700 font-bold mb-2'>
                 Source
               </label>
@@ -204,12 +212,12 @@ function JobListings() {
                       onClick={clearFileSelection}
                       className=""
                     >
-                      Clear Selection
+                      Clear file selection
                     </button>
                   </div>
               </div>
               <br/>
-              <button onClick={sendData} className='bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline'>
+              <button  onClick={() => sendData(false)} className='bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full focus:outline-none focus:shadow-outline'>
                 Search Jobs
               </button>
             </div>
@@ -223,6 +231,14 @@ function JobListings() {
               <JobListing key={index} job={job} />
             ))}
           </div>
+        )}
+        {hasMoreData && !loading && (
+          <button
+            onClick={() => sendData(true)}
+            className='bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full mt-4'
+          >
+            Load More
+          </button>
         )}
       </div>
     );
