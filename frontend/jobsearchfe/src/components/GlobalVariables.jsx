@@ -1,19 +1,59 @@
-import { useState, useEffect  } from 'react';
+import { useState, useEffect } from 'react';
 
-
-export const useEmailGlobalVariable = (key, initialValue) => {
-  // Retrieve the cached value from localStorage or use the provided initial value
+// Hook for managing email in localStorage
+export const useEmailGlobalVariable = (key = 'email', initialValue = '') => {
   const getInitialValue = () => {
     const storedValue = localStorage.getItem(key);
-    return storedValue !== null ? JSON.parse(storedValue) : initialValue;
+    if (storedValue === null || storedValue === 'undefined') {
+      return initialValue;
+    }
+    try {
+      return JSON.parse(storedValue);
+    } catch {
+      return initialValue; // Return initial value if parsing fails
+    }
   };
 
   const [emailGlobalVariable, setEmailGlobalVariable] = useState(getInitialValue);
 
-  // Update the localStorage whenever the global variable changes
   useEffect(() => {
     localStorage.setItem(key, JSON.stringify(emailGlobalVariable));
   }, [key, emailGlobalVariable]);
 
   return [emailGlobalVariable, setEmailGlobalVariable];
+};
+
+// Hook for managing name in localStorage
+export const useNameGlobalVariable = (key = 'name', initialValue = '') => {
+  const getInitialValue = () => {
+    const storedValue = localStorage.getItem(key);
+    if (storedValue === null || storedValue === 'undefined') {
+      return initialValue;
+    }
+    try {
+      return JSON.parse(storedValue);
+    } catch {
+      return initialValue; // Return initial value if parsing fails
+    }
+  };
+
+  const [nameGlobalVariable, setNameGlobalVariable] = useState(getInitialValue);
+
+  useEffect(() => {
+    localStorage.setItem(key, JSON.stringify(nameGlobalVariable));
+  }, [key, nameGlobalVariable]);
+
+  return [nameGlobalVariable, setNameGlobalVariable];
+};
+
+export const useClearGlobalVariables = () => {
+  const [emailGlobalVariable, setEmailGlobalVariable] = useEmailGlobalVariable();
+  const [nameGlobalVariable, setNameGlobalVariable] = useNameGlobalVariable();
+
+  return () => {
+    setEmailGlobalVariable('');
+    setNameGlobalVariable('');
+    localStorage.removeItem('email');
+    localStorage.removeItem('name');
+  };
 };

@@ -112,19 +112,7 @@ function JobScoreDetail({ onResult }) {
                             className="file:bg-blue-500 file:text-white file:py-2 file:px-4 file:rounded-md file:border-none file:cursor-pointer focus:outline-none focus:ring-2 focus:ring-blue-500"
                         />
                     </div>
-                    <div>
-                      <label className='block text-gray-700 font-bold mb-2'>
-                        Email
-                      </label>
-                      <input
-                        placeholder="Enter email to save history"
-                        type="email"
-                        value={emailGlobalVariable}
-                        onChange={handleEmailChange}
-                        className='border rounded w-full py-2 px-3 mb-2'
-                      />
-                      
-                    </div>
+
                     <div>
                       <label className='block text-gray-700 font-bold mb-2'>
                         Model

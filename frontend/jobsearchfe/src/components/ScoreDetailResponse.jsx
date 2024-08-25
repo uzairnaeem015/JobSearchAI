@@ -2,6 +2,11 @@ import React from 'react';
 
 function ResultComponent({ data })  {
 
+    if (!data) {
+        // Handle the case where data is undefined or null
+        return <div></div>;
+      }
+
     // empty data
     if (!data || !data["Gemini Result"]) {
         return (

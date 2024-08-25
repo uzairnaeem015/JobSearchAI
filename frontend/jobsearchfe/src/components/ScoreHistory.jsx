@@ -1,4 +1,3 @@
-// HistoryList.js
 import React, { useState, useEffect } from 'react';
 import { useEmailGlobalVariable } from './GlobalVariables';
 
@@ -8,31 +7,33 @@ const HistoryList = ({ onSelect }) => {
 
   const [emailGlobalVariable, setEmailGlobalVariable] = useEmailGlobalVariable('email', '');
 
-  const handleEmailChange = (event) => {
-    setEmail(event.target.value);
-    };
-
-
-  useEffect(() => {
-
-    const formData = new FormData();
+  // Function to fetch items from the backend
+  const fetchItems = async () => {
+    if(emailGlobalVariable)
+    {
+      const formData = new FormData();
       formData.append("email", emailGlobalVariable);
 
-    // Fetch list items from the backend
-    const fetchItems = async () => {
-        const api_url = import.meta.env.VITE_API_URL;
-        const apiUrl = api_url + '/get_job_score_history_list';
-        const response = await fetch(apiUrl, {
-            method: "POST",
-            body: formData
-          });
-    
-        const data = await response.json();
-        console.log(data);
-        setItems(data["result"]);
-    };
-    fetchItems();
-  }, []);
+      const api_url = import.meta.env.VITE_API_URL;
+      const apiUrl = api_url + '/get_job_score_history_list';
+      const response = await fetch(apiUrl, {
+        method: "POST",
+        body: formData
+      });
+
+      const data = await response.json();
+      console.log(data);
+      setItems(data["result"]);
+  }
+  };
+
+  // Function to handle button click
+  const handleButtonClick = () => {
+    setIsOpen(!isOpen);
+    if (!isOpen) {
+      fetchItems(); // Fetch items only when the list is opened
+    }
+  };
 
   // Function to format the datetime
   const formatDateTime = (datetime) => {
@@ -47,10 +48,11 @@ const HistoryList = ({ onSelect }) => {
   };
 
   return (
-    <div className="absolute bg-gray-100 z-10">
+    <div>
+    {( emailGlobalVariable && <div className="absolute bg-gray-100 z-10">
       <button 
         className="bg-blue-500 text-white px-4 py-2 rounded"
-        onClick={() => setIsOpen(!isOpen)}
+        onClick={handleButtonClick}
       >
         History
       </button>
@@ -71,6 +73,8 @@ const HistoryList = ({ onSelect }) => {
           ))}
         </ul>
       )}
+    </div>
+    )}
     </div>
   );
 };
