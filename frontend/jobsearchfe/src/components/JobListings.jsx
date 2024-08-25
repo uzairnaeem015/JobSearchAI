@@ -11,22 +11,24 @@ function JobListings() {
     const [responseData, setResponseData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [file, setFile] = useState(null);
-    const [scrapeChange, setScrapeChange] = useState("True");
+    const [scrapeChange, setScrapeChange] = useState("False");
     const [lastRecordId, setLastRecordId] = useState(null);
     const [hasMoreData, setHasMoreData] = useState(false);
-    
+    const [initialLoad, setInitialLoad] = useState(true); // New state for tracking initial load
+
 
     const resultsRef = useRef(null); // Create a reference for the results section
     const fileInputRef = useRef(null);
     
     useEffect(() => {
-      if (responseData.length > 0 && resultsRef.current) {
+      if (initialLoad && responseData.length > 0 && resultsRef.current) {
         scroller.scrollTo('results', {
           duration: 1000,
           delay: 0,
           smooth: 'easeInOutQuart',
           offset: -100, // Adjust if necessary
         });
+        setInitialLoad(false); // Set initialLoad to false after the first scroll
       }
     }, [responseData]);
 
@@ -63,25 +65,22 @@ function JobListings() {
     };
 
     const sendData = async (fetchMore = false) => {
-      try {
+      try {     
         
+        if (!title) {
+          alert("Please enter a job title before searching");
+          return;
+        }
+
+        if (!location) {
+          alert("Please enter a valid location before searching");
+          return;
+        }
+
         setLoading(true);
+
         const api_url = import.meta.env.VITE_API_URL;
         const apiUrl = api_url + '/search_jobs';
-
-        if (jobSite == '')
-        {
-          setSiteType('All');
-        }
-        console.log(jobSite);
-        if (title == '')
-        {
-          setTitle('Software engineer');
-        }
-        if (location == '')
-        {
-          setLocation('Dallas, TX');
-        }
 
         const formData = new FormData();
         if (file != null)
@@ -129,15 +128,13 @@ function JobListings() {
         // setResponseData(res.result);
         console.log(responseData);
 
-        // Scroll to the results section
-        if (resultsRef.current && fetchMore == false) {
-          resultsRef.current.scrollIntoView({ behavior: 'smooth' });
-        }
+
       } catch (error) {
         console.log(error);
       }
       finally {
         setLoading(false);
+        setInitialLoad(!fetchMore);
       }
     };
   
@@ -156,6 +153,7 @@ function JobListings() {
                 value={title}
                 onChange={handleTitleChange}
                 className='border rounded w-full py-2 px-3 mb-2'
+                required
               />
               <label className='block text-gray-700 font-bold mb-2'>
                 Location
@@ -166,17 +164,18 @@ function JobListings() {
                 value={location}
                 onChange={handleLocationChange}
                 className='border rounded w-full py-2 px-3 mb-2'
+                required
               />
               <label className='block text-gray-700 font-bold mb-2'>
-                Scrape data from job listing sites
+                Scrape data? Yes: scrape data from web, No: Fetch scraped data from DB
               </label>
               <select
                 value={scrapeChange}
                 onChange={handleScrapeChange}
                 className='border rounded w-full py-2 px-3'
               >
-                <option value="True">Yes</option>
                 <option value="False">No</option>
+                <option value="True">Yes</option>
               </select>
 
               <label className='block text-gray-700 font-bold mb-2'>
@@ -224,7 +223,15 @@ function JobListings() {
           </div>
         </div>
         {loading ? (
+          <div>
           <Spinner loading={loading} />
+          <div id="results" className='bg-gray-100 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2' ref={resultsRef}>
+            {responseData.map((job, index) => (
+              <JobListing key={index} job={job} />
+            ))}
+          </div>
+          </div>
+          
         ) : (
           <div id="results" className='bg-gray-100 grid grid-cols-1 sm:grid-cols-1 md:grid-cols-1 lg:grid-cols-2' ref={resultsRef}>
             {responseData.map((job, index) => (
@@ -232,14 +239,17 @@ function JobListings() {
             ))}
           </div>
         )}
-        {hasMoreData && !loading && (
-          <button
+        {hasMoreData && !loading && scrapeChange == "False" && (
+          <div className="flex justify-center mt-4">
+          <button 
             onClick={() => sendData(true)}
-            className='bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full w-full mt-4'
+             className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
           >
             Load More
           </button>
+          </div>
         )}
+        <br/>
       </div>
     );
   }

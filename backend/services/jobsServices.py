@@ -58,12 +58,18 @@ class ScrapeJobs:
             )
             jobs = jobs.fillna('')
 
+            logger.info(f"Jobs found in web scrapping {len(jobs)}")
+
             self.mongoDB.insert_jobs(jobs)
 
-        jobs = self.mongoDB.fetch_jobs(jobs, self.title, self.site, self.location, last_id)
+            row_count = len(jobs)
+            listofzeroes = ["0"] * row_count
+            jobs['orgid'] = listofzeroes
+
+        else:
+            jobs = self.mongoDB.fetch_jobs(jobs, self.title, self.site, self.location, last_id)
 
         
-
         if resume_content:
             Doc2VecGensim_model = Doc2VecGensim('./models/cv_job_maching.model')
             sentenceTransformer_model = Sentence_Transformer()
@@ -115,10 +121,11 @@ class ScrapeJobs:
 
 
         logger.info(f"Found {len(jobs)} jobs")
-        logger.info(jobs.head())
+        if verbose:
+            logger.info(jobs.head())
 
         # result = jobs.to_json(orient="table")
 
         result = jobs.to_dict(orient="records")
-        # jobs.to_csv("jobs.csv", quoting=csv.QUOTE_NONNUMERIC, escapechar="\\", index=False) # to_excel
+
         return result

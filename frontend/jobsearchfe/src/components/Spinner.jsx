@@ -10,6 +10,8 @@ const override = {
 };
 
 const Spinner = ({ loading }) => {
+  if (!loading) return null; // Don't render the spinner if not loading
+
   return (
     <div
       style={{
@@ -21,7 +23,7 @@ const Spinner = ({ loading }) => {
         display: 'flex',
         justifyContent: 'center',
         alignItems: 'center',
-        backgroundColor: 'rgba(255, 255, 255, 0.8)', // Optional: add a semi-transparent background
+        backgroundColor: 'rgba(255, 255, 255, 0.8)', // Optional: semi-transparent background
         zIndex: 9998, // Ensure it's behind the loader but still on top
       }}
     >

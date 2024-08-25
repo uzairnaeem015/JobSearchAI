@@ -138,8 +138,8 @@ class MongoDB:
             from datetime import datetime
             current_datetime = datetime.now()
             # Handle NaT values (e.g., fill with a specific date)
-            jobs_df['date_posted'].fillna(pd.Timestamp(current_datetime), inplace=True)
-
+            # jobs_df['date_posted'].fillna(pd.Timestamp(current_datetime), inplace=True)
+            jobs_df['date_posted'] = jobs_df['date_posted'].fillna(pd.Timestamp(current_datetime))
             # Now you can safely perform datetime operations
             jobs_df['date_posted'] = jobs_df['date_posted'].dt.tz_localize('UTC')
 
