@@ -204,11 +204,14 @@ class MongoDB:
             df = pd.DataFrame(docs_list)
             #print(len(df))
             df['orgid'] = df['_id'].astype(str)
-
-            # Drop the original '_id' column
             df = df.drop(columns=['_id'])
+            
+            df['score_id'] = df['job_score_id'].astype(str)
+            df = df.drop(columns=['job_score_id'])
+            
+            result = df.to_dict(orient="records")
 
-            return df
+            return result
 
         except Exception as e:
             logging.error(e)
@@ -234,6 +237,7 @@ class MongoDB:
 
             results = collection.aggregate(pipeline)
             docs_list = list(results)
+            
             return docs_list[0]['score_object']
 
         except Exception as e:

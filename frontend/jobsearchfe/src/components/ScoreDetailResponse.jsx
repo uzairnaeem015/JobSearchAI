@@ -23,7 +23,7 @@ function ResultComponent({ data })  {
     if (data == null)
         data = data_cons; 
     const { result } = data["Gemini Result"];
-
+    
     if (typeof result === String )
     {
         return (

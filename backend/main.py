@@ -94,7 +94,7 @@ def get_job_score_history_list(email: str = Form(None)):
     db = MongoDB()
 
     response = db.fetch_score_history(email)
-
+    
     return {
         "result" : response
     }
@@ -110,7 +110,7 @@ def get_selected_job_score(id: str = Form(None)):
     db = MongoDB()
 
     response = db.fetch_score_by_id(id)
-
+    
     return {
-        "result" : response
+        "Gemini Result" : response
     }
