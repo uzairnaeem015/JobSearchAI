@@ -13,11 +13,11 @@ import NotFoundPage from './pages/NotFoundPage';
 const App = () => {
   const router = createBrowserRouter(
     createRoutesFromElements(
-      <Route path='/' element={<MainLayout />}>
-        <Route index element={<HomePage />} />
-        <Route path='/JobSearchAI' element={<HomePage />} />
-        <Route path='/jobScoreDetail' element={<JobsScoreDetailPage />} />
-        <Route path='/about' element={<About />} />
+      <Route path='/JobSearchAI/' element={<MainLayout />}>
+        <Route index path='/JobSearchAI/home' element={<HomePage />} />
+        <Route index path='/JobSearchAI/' element={<HomePage />} />
+        <Route path='/JobSearchAI/jobScoreDetail' element={<JobsScoreDetailPage />} />
+        <Route path='/JobSearchAI/about' element={<About />} />
         <Route path='*' element={<NotFoundPage />} />
       </Route>
     )

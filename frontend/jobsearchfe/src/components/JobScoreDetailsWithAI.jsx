@@ -1,7 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import Spinner from './Spinner';
-import axios from "axios";
-import ResultComponent from "./ScoreDetailResponse";
 import { useEmailGlobalVariable } from './GlobalVariables';
 
 
@@ -11,7 +9,6 @@ function JobScoreDetail({ onResult }) {
     const [llm, setLLM] = useState("gemini-1.5-flash");
     const [apiKey, setApiKey] = useState("");
     const [loading, setLoading] = useState(false);
-    const [responseData, setData] = useState(null);
    
     const [emailGlobalVariable, setEmailGlobalVariable] = useEmailGlobalVariable('email', '');
 
@@ -22,14 +19,7 @@ function JobScoreDetail({ onResult }) {
       } else {
         alert("Please upload a valid PDF file.");
       }
-    };
-
-    const handleEmailChange = (e) => {
-      const value = e.target.value;
-      setEmailGlobalVariable(value);
-
-    };
-  
+    }; 
 
     const handleApiKeyChange = (event) => {
         setApiKey(event.target.value);

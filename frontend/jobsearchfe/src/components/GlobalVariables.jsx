@@ -1,17 +1,9 @@
 import { useState, useEffect } from 'react';
 
-// Hook for managing email in localStorage
 export const useEmailGlobalVariable = (key = 'email', initialValue = '') => {
   const getInitialValue = () => {
     const storedValue = localStorage.getItem(key);
-    if (storedValue === null || storedValue === 'undefined') {
-      return initialValue;
-    }
-    try {
-      return JSON.parse(storedValue);
-    } catch {
-      return initialValue; // Return initial value if parsing fails
-    }
+    return storedValue !== null ? JSON.parse(storedValue) : initialValue;
   };
 
   const [emailGlobalVariable, setEmailGlobalVariable] = useState(getInitialValue);
@@ -23,18 +15,10 @@ export const useEmailGlobalVariable = (key = 'email', initialValue = '') => {
   return [emailGlobalVariable, setEmailGlobalVariable];
 };
 
-// Hook for managing name in localStorage
 export const useNameGlobalVariable = (key = 'name', initialValue = '') => {
   const getInitialValue = () => {
     const storedValue = localStorage.getItem(key);
-    if (storedValue === null || storedValue === 'undefined') {
-      return initialValue;
-    }
-    try {
-      return JSON.parse(storedValue);
-    } catch {
-      return initialValue; // Return initial value if parsing fails
-    }
+    return storedValue !== null ? JSON.parse(storedValue) : initialValue;
   };
 
   const [nameGlobalVariable, setNameGlobalVariable] = useState(getInitialValue);

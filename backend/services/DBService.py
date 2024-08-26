@@ -45,17 +45,58 @@ class MongoDB:
             raise e
         
 
-    def insert_new_user(self, name, username, email):
+    def insert_new_user(self, name, email, password):
         collection = self.db['users']
-
-        # Example: Insert a document into the collection
-        document = {"name": name, "username": username, "email": email}
-        collection.insert_one(document)
 
         result = collection.find_one({"email": email})
 
-        return result
-    
+        success = False
+        message = ""
+
+        if result is not None:
+            message =  f"{email} already exist, please login using id password";
+        else:
+            document = {"name": name, "email": email, "password": password}
+            result = collection.insert_one(document)
+            
+            result = collection.find_one({"email": email,"password": password})
+            message = "Success"
+            success = True
+
+        return {
+            "Name" : result["name"],
+            "Email" : result["email"],
+            "Message" : message,
+            "Success" : success
+        }
+
+    def login_user(self, email, password):
+        collection = self.db['users']
+        
+        success = False
+        message = ""
+        name = ""
+
+        result = collection.find_one({"email": email})
+
+        if result:
+            if result["password"] == password:
+                message = "Success"
+                success = True
+                name = result["name"]
+            else:
+                message = "Password is incorrect"
+        else:
+            message = f"{email} email not found, please sign up!"
+
+
+        return {
+            "Name" : name,
+            "Email" : email,
+            "Message" : message,
+            "Success" : success
+        }
+
 
     def fetch_jobs(self, jobs_df, title, site, location, last_id_param = "0"):
         try:

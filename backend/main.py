@@ -114,3 +114,47 @@ def get_selected_job_score(id: str = Form(None)):
     return {
         "Gemini Result" : response
     }
+
+@app.post("/sign_up")
+def sign_up(username: str = Form(None), email: str = Form(None), password: str = Form(None)):
+    
+    if username is None or username == '': 
+        return {
+        "Result" : {"Message" : "Please enter user name" , "Success" : False}
+    }
+    if email is None or email == '': 
+        return {
+        "Result" : {"Message" : "Please enter email address." , "Success" : False}
+    }
+    if password is None or password == '': 
+        return {
+        "Result" : {"Message" : "Password cannot be empty" , "Success" : False}
+    }
+
+    db = MongoDB()
+
+    response = db.insert_new_user(username, email, password)
+    
+    return {
+        "Result" : response
+    }
+
+@app.post("/login")
+def login(email: str = Form(None), password: str = Form(None)):
+    
+    if email is None or email == '': 
+        return {
+        "Result" : {"Message" : "Please enter email address." , "Success" : False}
+    }
+    if password is None or password == '': 
+        return {
+        "Result" : {"Message" : "Password cannot be empty" , "Success" : False}
+    }
+
+    db = MongoDB()
+
+    response = db.login_user(email, password)
+    
+    return {
+        "Result" : response
+    }

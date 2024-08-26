@@ -16,7 +16,7 @@ const Navbar = () => {
     clearGlobalVariables();
     setIsModalOpen(false);
     setIsDropdownOpen(false); // Hide dropdown
-    navigate('/'); // Redirect to the main page
+    navigate('/JobSearchAI/home'); // Redirect to the main page
     window.location.reload(); // Refresh the page
   };
 
@@ -30,21 +30,21 @@ const Navbar = () => {
       <div className='mx-auto max-w-7xl px-2 sm:px-6 lg:px-8'>
         <div className='flex h-20 items-center justify-between'>
           <div className='flex flex-1 items-center justify-center md:items-stretch md:justify-start'>
-            <NavLink className='flex flex-shrink-0 items-center mr-4' to='/'>
-              <img className='h-10 w-auto' src={logo} alt='React Jobs' />
+            <NavLink className='flex flex-shrink-0 items-center mr-4' to='/JobSearchAI/home'>
+              <img className='h-10 w-auto' src={logo} alt='Search jobs AI' />
               <span className='hidden md:block text-white text-2xl font-bold ml-2'>
                 Search Jobs AI
               </span>
             </NavLink>
             <div className='md:ml-auto'>
               <div className='flex space-x-2'>
-                <NavLink to='/' className={linkClass}>
+                <NavLink to='/JobSearchAI/home' className={linkClass}>
                   Home
                 </NavLink>
-                <NavLink to='/jobScoreDetail' className={linkClass}>
+                <NavLink to='/JobSearchAI/jobScoreDetail' className={linkClass}>
                   Job score details with AI 
                 </NavLink>
-                <NavLink to='/about' className={linkClass}>
+                <NavLink to='/JobSearchAI/about' className={linkClass}>
                   About
                 </NavLink>
                 <div className='relative'>

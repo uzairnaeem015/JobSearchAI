@@ -23,7 +23,13 @@ const HistoryList = ({ onSelect }) => {
 
       const data = await response.json();
       console.log(data);
-      setItems(data["result"]);
+      if (Array.isArray(data["result"])) {
+        setItems(data["result"]);
+      }
+      else
+      {
+        setItems([]);
+      }
   }
   };
 
@@ -58,7 +64,7 @@ const HistoryList = ({ onSelect }) => {
       </button>
       {isOpen && items && (
         <ul className="absolute left-0 w-64 mt-2 max-h-124 border border-gray-200 rounded bg-white z-10 overflow-y-auto">
-          {items.map((item, index) => (
+          {items && items.map((item, index) => (
             <li  
               key={item.score_id} 
               className="px-4 py-2 hover:bg-gray-100 cursor-pointer"

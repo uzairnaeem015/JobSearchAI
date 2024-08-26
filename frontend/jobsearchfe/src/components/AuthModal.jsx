@@ -3,9 +3,11 @@ import { useEmailGlobalVariable, useNameGlobalVariable } from './GlobalVariables
 
 const AuthModal = ({ onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
-  const [email, setEmail] = useEmailGlobalVariable();
-  const [name, setName] = useNameGlobalVariable();
+  const [email, setEmail] = useEmailGlobalVariable(); // Hook for global email
+  const [name, setName] = useNameGlobalVariable(); // Hook for global name
   const [password, setPassword] = useState('');
+  const [emailLocal, setEmailLocal] = useState('');
+  const [userNameLocal, setUserNameLocal] = useState('');
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async (event) => {
@@ -14,33 +16,42 @@ const AuthModal = ({ onClose }) => {
 
     const api_url = import.meta.env.VITE_API_URL;
     const endpoint = isSignUp ? '/sign_up' : '/login'; // API endpoints
-    const formData = { email, password, name }; // Include Name
+    const formData = new FormData();
+    formData.append('email', emailLocal);
+    formData.append('password', password);
+
+    if (isSignUp) {
+      formData.append('username', userNameLocal); // Only append username for sign-up
+    }
 
     try {
       const response = await fetch(api_url + endpoint, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: formData,
       });
-
       const result = await response.json();
+      console.log(result);
 
-      if (result.success) {
+      if (result.Result.Success) {
         // Update global variables and close the modal
-        setEmail(email);
-        setName(name);
-        onClose();
+        setEmail(result.Result.Email);
+        setName(result.Result.Name);
+        
+        // Optionally, reload the page after successful login/sign-up
+        window.location.reload();
+        //
       } else {
-        alert(result.message || 'An error occurred');
+        alert(result.Result.Message || 'An error occurred');
       }
     } catch (error) {
       console.error('Error:', error);
       alert('Failed to authenticate.');
     } finally {
       setLoading(false);
+      
     }
   };
-
+ 
   return (
     <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
       <div className="bg-white p-6 rounded-md w-80">
@@ -52,8 +63,8 @@ const AuthModal = ({ onClose }) => {
               <input
                 type="text"
                 id="name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
+                value={userNameLocal}
+                onChange={(e) => setUserNameLocal(e.target.value)}
                 className="border rounded w-full p-2"
                 required
               />
@@ -64,8 +75,8 @@ const AuthModal = ({ onClose }) => {
             <input
               type="email"
               id="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              value={emailLocal}
+              onChange={(e) => setEmailLocal(e.target.value)}
               className="border rounded w-full p-2"
               required
             />
@@ -94,7 +105,7 @@ const AuthModal = ({ onClose }) => {
         </form>
         <button
           onClick={onClose}
-          className="absolute top-2 right-2 text-gray-500"
+          className="absolute top-4 right-4 text-gray-500"
         >
           &times;
         </button>
