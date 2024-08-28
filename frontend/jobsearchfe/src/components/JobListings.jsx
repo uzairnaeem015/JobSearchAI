@@ -15,15 +15,15 @@ function JobListings() {
     const [lastRecordId, setLastRecordId] = useState(null);
     const [hasMoreData, setHasMoreData] = useState(false);
     const [initialLoad, setInitialLoad] = useState(true);
-    const [selectedJobIndex, setSelectedJobIndex] = useState(null); // New state for selected job index
-
+    const [selectedJobIndex, setSelectedJobIndex] = useState(null);
 
     const resultsRef = useRef(null);
     const fileInputRef = useRef(null);
-    
+
     const handleJobClick = (index) => {
-      setSelectedJobIndex(index);
-  };
+        setSelectedJobIndex(index);
+    };
+
     useEffect(() => {
         if (initialLoad && responseData.length > 0 && resultsRef.current) {
             scroller.scrollTo('results', {
@@ -48,12 +48,15 @@ function JobListings() {
     const handleScrapeChange = (event) => {
         setScrapeChange(event.target.value);
     };
+
     const handleTitleChange = (event) => {
         setTitle(event.target.value);
     };
+
     const handleJobSiteChange = (event) => {
         setSiteType(event.target.value);
     };
+
     const handleLocationChange = (event) => {
         setLocation(event.target.value);
     };
@@ -67,7 +70,6 @@ function JobListings() {
 
     const sendData = async (fetchMore = false) => {
         try {
-          
             if (!title) {
                 alert("Please enter a job title before searching");
                 return;
@@ -119,9 +121,8 @@ function JobListings() {
         } catch (error) {
             console.log(error);
         } finally {
-            if(fetchMore == false)
-            {
-              setSelectedJobIndex(0);
+            if (fetchMore == false) {
+                setSelectedJobIndex(0);
             }
             setLoading(false);
             setInitialLoad(!fetchMore);
@@ -212,19 +213,20 @@ function JobListings() {
                 </div>
             </div>
 
-            <div className="flex">
+           {(selectedJobIndex !== null && <div className="flex">
                 <div className="w-1/3 overflow-y-auto h-screen p-8">
                     {loading ? (
                         <Spinner loading={loading} />
-                        
                     ) : (<></>)}
-                        <div id="results" ref={resultsRef}>
-                            {responseData.map((job, index) => (
-                                <div key={index} onClick={() => handleJobClick(index)} 
-                                  className="cursor-pointer hover:bg-gray-200 flex items-start">
-                                  <div>
-                                    {job.logo_photo_url && (
-                                      <a 
+                    <div id="results" ref={resultsRef}>
+                        {responseData.map((job, index) => (
+                            <div
+                                key={index}
+                                onClick={() => handleJobClick(index)}
+                                className={`cursor-pointer flex items-start p-2 rounded-md ${selectedJobIndex === index ? 'bg-indigo-200' : 'hover:bg-gray-200'}`}
+                            >
+                                {job.logo_photo_url && (
+                                    <a 
                                       href={job.company_url_direct  || job.company_url} 
                                       target='_blank' 
                                       rel='noopener noreferrer'
@@ -235,38 +237,33 @@ function JobListings() {
                                         alt={`${job.company} logo`} 
                                         className='h-12 w-12 object-contain mr-4' 
                                       />
-                                      </a>
-                                      
-                                    )}
-                                    </div>
-                                    <div>
-                                      <h3 className="font-bold">{index +1}. {job.title}</h3>
-                                      <p className="text-sm">{job.company}</p>
-                                    </div>
+                                    </a>
+                                )}
+                                <div>
+                                    <h3 className="font-bold">{index + 1}. {job.title}</h3>
+                                    <p className="text-sm">{job.company}</p>
                                 </div>
-                            ))}       
-                            {hasMoreData && !loading && scrapeChange === "False" && (
-                        <div className="flex justify-center mt-4">
-                            <button
-                                onClick={() => sendData(true)}
-                                className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
-                            >
-                                Load More
-                            </button>
-                        </div>
-                    )}                    
-                        </div>
-                    
+                            </div>
+                        ))}
+                        {hasMoreData && !loading && scrapeChange === "False" && (
+                            <div className="flex justify-center mt-4">
+                                <button
+                                    onClick={() => sendData(true)}
+                                    className="bg-indigo-500 hover:bg-indigo-600 text-white font-bold py-2 px-4 rounded-full focus:outline-none focus:shadow-outline"
+                                >
+                                    Load More
+                                </button>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <div className="w-2/3 p-4">
-                    {selectedJobIndex !== null  ? (
+                    {selectedJobIndex !== null && (
                         <JobListing job={responseData[selectedJobIndex]} />
-                    ) : (
-                        <p></p>
-                    )}
+                    ) }
                 </div>
             </div>
-            <br />
+            )}
         </div>
     );
 }

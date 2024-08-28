@@ -75,7 +75,7 @@ def search_jobs(job_title: str = Form(...),
     else:
         resume_content = ""
 
-    processor = ScrapeJobs(job_title, location, 5, job_site,  24)
+    processor = ScrapeJobs(job_title, location, 25, job_site,  24)
     
     result = processor.retrieve_jobs(resume_content, bool(scrape), last_id,  remove_stopwords= True,  verbose = False)
 
