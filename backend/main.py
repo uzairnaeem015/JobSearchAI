@@ -84,24 +84,45 @@ def search_jobs(job_title: str = Form(...),
     }
 
 @app.post("/get_job_score_history_list")
-def get_job_score_history_list(email: str = Form(None)):
+def get_job_score_history_list(email: str = Form(None), password: str = Form(None)):
     
     if email is None or email == '': 
         return {
-        "result" : "Invalid email"
-    } 
+        "Result" : {"Message" : "Please enter email address." , "Success" : False}
+    }
+    if password is None or password == '': 
+        return {
+        "Result" : {"Message" : "Password cannot be empty" , "Success" : False}
+    }
 
     db = MongoDB()
 
-    response = db.fetch_score_history(email)
+    auth = db.login_user(email, password)
     
-    return {
-        "result" : response
+    try:
+        if auth["Success"] == True:
+            response = db.fetch_score_history(email)
+        
+        return {
+            "result" : response
+        }
+    except:
+        return {
+        "Result" : {"Message" : "Unable to authorize" , "Success" : False}
     }
 
 @app.post("/get_selected_job_score")
-def get_selected_job_score(id: str = Form(None)):
+def get_selected_job_score(id: str = Form(None), email: str = Form(None), password: str = Form(None)):
     
+    if email is None or email == '': 
+        return {
+        "Result" : {"Message" : "Please enter email address." , "Success" : False}
+    }
+    if password is None or password == '': 
+        return {
+        "Result" : {"Message" : "Password cannot be empty" , "Success" : False}
+    }
+
     if id is None or id == '': 
         return {
         "result" : "Invalid id"
@@ -109,11 +130,20 @@ def get_selected_job_score(id: str = Form(None)):
 
     db = MongoDB()
 
-    response = db.fetch_score_by_id(id)
+    auth = db.login_user(email, password)
     
-    return {
-        "result" : response
+    try:
+        if auth["Success"] == True:
+            response = db.fetch_score_by_id(id)
+        
+        return {
+            "result" : response
+        }
+    except:
+        return {
+        "Result" : {"Message" : "Unable to authorize" , "Success" : False}
     }
+    
 
 @app.post("/sign_up")
 def sign_up(username: str = Form(None), email: str = Form(None), password: str = Form(None)):

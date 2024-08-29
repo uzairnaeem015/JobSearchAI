@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useEmailGlobalVariable } from './GlobalVariables';
+import { useEmailGlobalVariable , useHashPasswordGlobalVariable} from './GlobalVariables';
 
 const HistoryList = ({ onSelect }) => {
   const [items, setItems] = useState([]);
   const [isOpen, setIsOpen] = useState(false);
 
   const [emailGlobalVariable, setEmailGlobalVariable] = useEmailGlobalVariable('email', '');
+  const [passwordGlobalVariable, setPasswordGlobalVariable] = useHashPasswordGlobalVariable('password', '');
 
   // Function to fetch items from the backend
   const fetchItems = async () => {
@@ -13,6 +14,7 @@ const HistoryList = ({ onSelect }) => {
     {
       const formData = new FormData();
       formData.append("email", emailGlobalVariable);
+      formData.append("password", passwordGlobalVariable);
 
       const api_url = import.meta.env.VITE_API_URL;
       const apiUrl = api_url + '/get_job_score_history_list';

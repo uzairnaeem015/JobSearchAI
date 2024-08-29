@@ -1,15 +1,25 @@
 import React, { useState } from 'react';
-import { useEmailGlobalVariable, useNameGlobalVariable } from './GlobalVariables'; // Import hooks for global variables
+import { useEmailGlobalVariable, useNameGlobalVariable, useHashPasswordGlobalVariable } from './GlobalVariables'; // Import hooks for global variables
+import CryptoJS from "crypto-js";
 
 const AuthModal = ({ onClose }) => {
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useEmailGlobalVariable(); // Hook for global email
   const [name, setName] = useNameGlobalVariable(); // Hook for global name
+  const [encryptedPassword, setEncryptedPassword] = useHashPasswordGlobalVariable(); // Hook for global name
   const [password, setPassword] = useState('');
   const [emailLocal, setEmailLocal] = useState('');
   const [userNameLocal, setUserNameLocal] = useState('');
   const [loading, setLoading] = useState(false);
 
+  const handlePasswordEncryption = (password) => {
+    // Encrypt the password
+    const encrypted = CryptoJS.SHA256(password).toString();
+    
+    // Save it in a local variable (state in this case)
+    setPassword(encrypted);
+  };
+  
   const handleSubmit = async (event) => {
     event.preventDefault();
     setLoading(true);
@@ -36,6 +46,7 @@ const AuthModal = ({ onClose }) => {
         // Update global variables and close the modal
         setEmail(result.Result.Email);
         setName(result.Result.Name);
+        setEncryptedPassword(password);
         
         // Optionally, reload the page after successful login/sign-up
         window.location.reload();
@@ -86,8 +97,8 @@ const AuthModal = ({ onClose }) => {
             <input
               type="password"
               id="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              //value={password}
+              onChange={(e) => handlePasswordEncryption(e.target.value)}
               className="border rounded w-full p-2"
               required
             />

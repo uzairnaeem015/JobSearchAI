@@ -3,15 +3,22 @@ import JobScoreDetail from '../components/JobScoreDetailsWithAI';
 import HistoryList from '../components/ScoreHistory';
 import ResultComponent from "../components/ScoreDetailResponse";
 import Spinner from '../components/Spinner';
+import { useEmailGlobalVariable , useHashPasswordGlobalVariable} from '../components/GlobalVariables';
 
 const JobsScoreDetailPage = () => {
   const [responseData, setData] = useState();
   const [loading, setLoading] = useState(false);
   const [desc, setDesc] = useState("");
 
+  const [emailGlobalVariable, setEmailGlobalVariable] = useEmailGlobalVariable('email', '');
+  const [passwordGlobalVariable, setPasswordGlobalVariable] = useHashPasswordGlobalVariable('password', '');
+
   const handleSelect = async (item) => {
     const formData = new FormData();
     formData.append("id", item.score_id);
+    formData.append("email", emailGlobalVariable);
+    formData.append("password", passwordGlobalVariable);
+
 
 
     try {
