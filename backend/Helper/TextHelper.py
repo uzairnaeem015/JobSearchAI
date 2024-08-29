@@ -8,6 +8,7 @@ class TextPreprocessor:
         nltk.download('punkt')
         nltk.download('stopwords')
         nltk.download('wordnet')
+        nltk.download('punkt_tab')
         self.stop_words = set(stopwords.words('english'))
 
     def text_preprocess(self, text):
