@@ -22,7 +22,7 @@ const HistoryList = ({ onSelect }) => {
       });
 
       const data = await response.json();
-      console.log(data);
+      //console.log(data);
       if (Array.isArray(data["result"])) {
         setItems(data["result"]);
       }
@@ -46,7 +46,7 @@ const HistoryList = ({ onSelect }) => {
     const date = new Date(datetime);
     return new Intl.DateTimeFormat('en-US', {
       year: 'numeric',
-      month: 'long',
+      month: 'short',
       day: 'numeric',
       hour: '2-digit',
       minute: '2-digit',
@@ -74,7 +74,7 @@ const HistoryList = ({ onSelect }) => {
               }}
             >
               {/* Display serial number, formatted datetime, and email */}
-              {index + 1}: <strong>{item.email}</strong> {formatDateTime(item.datetime)} 
+              {index + 1}: <strong>{item.model ? item.model : item.email}</strong> {formatDateTime(item.datetime)} 
             </li>
           ))}
         </ul>

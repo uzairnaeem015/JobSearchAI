@@ -195,21 +195,17 @@ class MongoDB:
             raise   e
         
 
-    def insert_score_history(self, score_object, email, model):
+    def insert_score_history(self, score_object, email, model, success, jd, resume):
         try:
-            collection = self.db['jobscore']
-            
-            # Example: Insert a document into the collection
-            document = {"score_object": score_object, "email":  email, "model": model}
-            ret = collection.insert_one(document)
-
             from datetime import datetime
             current_datetime = datetime.now()
 
+            collection = self.db['jobscore']
+            document = {"score_object": score_object, "email":  email, "model": model, "success" :success, "job_desc": jd, "resume_content" : resume}
+            ret = collection.insert_one(document)
+
             collection2 = self.db['userjobscorehistory']
-            
-            # Example: Insert a document into the collection
-            document2 = {"email": email, "job_score_id":  ret.inserted_id, "datetime": current_datetime}
+            document2 = {"email": email, "job_score_id":  ret.inserted_id, "datetime": current_datetime, "model": model, "success" :success}
             collection2.insert_one(document2)
 
         except Exception as e:
@@ -241,9 +237,11 @@ class MongoDB:
             
             docs_list = list(results)
 
+            
             # Convert the list of dictionaries to a pandas DataFrame
             df = pd.DataFrame(docs_list)
             #print(len(df))
+            df = df.fillna('')
             df['orgid'] = df['_id'].astype(str)
             df = df.drop(columns=['_id'])
             

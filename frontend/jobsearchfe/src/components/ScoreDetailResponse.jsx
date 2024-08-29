@@ -2,13 +2,13 @@ import React from 'react';
 
 function ResultComponent({ data })  {
 
-    if (!data) {
+    if (!data || data == null) {
         // Handle the case where data is undefined or null
         return <div></div>;
       }
 
     // empty data
-    if (!data || !data["Gemini Result"]) {
+    if (!data["Gemini Result"]) {
         return (
             <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
                 <h1 className="text-2xl font-bold text-gray-800 mb-4">Gemini Result Analysis</h1>
@@ -25,20 +25,52 @@ function ResultComponent({ data })  {
             </div>
         );
     }
-    if (data == null)
-        data = data_cons; 
-    const { result } = data["Gemini Result"];
-    
-    if (typeof result === String )
+
+    let { result } = data["Gemini Result"];
+
+    if (result === undefined)
     {
-        return (
-            <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
-                <h1 className="text-2xl font-bold text-gray-800 mb-4">Gemini Result Analysis</h1>
-                <p className="text-lg text-red-600">Inavlid json response, here is the raw text</p>
-                <p className="text-gray-600">{result}</p>
-            </div>
-        );
+        try
+        {
+        let cleanedJsonString = String(data["Gemini Result"]);
+        cleanedJsonString = cleanedJsonString.replace("```json", "");
+        cleanedJsonString = cleanedJsonString.replace("```", "");
+        cleanedJsonString = cleanedJsonString.replace(/\n/g, ' ');
+        
+        // Step 2: Parse the JSON string
+        const jsonObject = JSON.parse(cleanedJsonString);
+        
+        result = jsonObject["result"]
+        }
+        catch (e)
+        {
+            result = undefined
+            console.error(e);
+        }
+        
     }
+    
+    // if (typeof data === String )
+    // {
+    //     return (
+    //         <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    //             <h1 className="text-2xl font-bold text-gray-800 mb-4">Gemini Result Analysis</h1>
+    //             <p className="text-lg text-red-600">Inavlid json response, here is the raw text</p>
+    //             <p className="text-gray-600">{data}</p>
+    //         </div>
+    //     );
+    // }
+
+    // if (typeof result === undefined)
+    // {
+    //     return (
+    //         <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+    //             <h1 className="text-2xl font-bold text-gray-800 mb-4">Gemini Result Analysis</h1>
+    //             <p className="text-lg text-red-600">Inavlid json response, here is the raw text</p>
+    //             <p className="text-gray-600">{cleanedJsonString}</p>
+    //         </div>
+    //     );
+    // }
 
     const highlightDifferences = (original, optimized) => {
         const originalWords = original.split(' ');
@@ -53,7 +85,9 @@ function ResultComponent({ data })  {
     };
 
     return (
-        <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+        <div>
+            {result ?  
+        (<div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
             <h1 className="text-2xl font-bold text-gray-800 mb-4">Gemini Result Analysis</h1>
             
             <div className="mb-6">
@@ -142,6 +176,18 @@ function ResultComponent({ data })  {
                     ))}
                 </ul>
             </div>
+        </div>
+            )
+            :
+        (
+            <div className="max-w-7xl mx-auto p-6 bg-white shadow-lg rounded-lg">
+                <h1 className="text-2xl font-bold text-gray-800 mb-4">Gemini Result Analysis</h1>
+                <p className="text-lg text-red-600">Inavlid json response, here is the raw text</p>
+                <p className="text-gray-600">{cleanedJsonString}</p>
+            </div>
+        )
+            }
+
         </div>
     );
 };

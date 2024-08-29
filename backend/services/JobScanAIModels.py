@@ -164,7 +164,7 @@ class GoogleGemini:
     def job_similarity_score(self, job_desc, resume, email,  verbose = False):
         jsonRes = ""
         try:
-            
+            status = True
             response = ""
             input = self.input_prompt.format(resume=resume, jd=job_desc)
             if verbose == True:
@@ -179,19 +179,25 @@ class GoogleGemini:
             response_text = response_text.replace("```", '')
             jsonRes = json.loads(response_text)
 
-            if email is not None or email != "":
-                self.mongoDB.insert_score_history(jsonRes, email, self.model_name)
+            
 
         except InvalidArgument as e:
+            status = False
             logging.error(f"Invalid API key provided: {e}")
             return "Invalid API key. Please pass a valid API key."
         
         except json.JSONDecodeError as e:
+            status = False
             print(f"Error parsing JSON: {e}")
             jsonRes = response.text  # or handle the error as appropriate
         except :
+            status = False
             logging.error(response)
             logging.error("some error occurred")
+        
+        finally:
+            if email is not None or email != "":
+                self.mongoDB.insert_score_history(jsonRes, email, self.model_name, status, job_desc, resume)
 
         return jsonRes
 
