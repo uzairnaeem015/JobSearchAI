@@ -112,7 +112,7 @@ def get_selected_job_score(id: str = Form(None)):
     response = db.fetch_score_by_id(id)
     
     return {
-        "Gemini Result" : response
+        "result" : response
     }
 
 @app.post("/sign_up")

@@ -3,13 +3,13 @@ import Spinner from './Spinner';
 import { useEmailGlobalVariable } from './GlobalVariables';
 
 
-function JobScoreDetail({ onResult }) {
+function JobScoreDetail({ description, onResult }) {
     const [file, setFile] = useState(null);
-    const [text, setDescription] = useState("");
+    const [text, setDescription] = useState('');
     const [llm, setLLM] = useState("gemini-1.5-flash");
     const [apiKey, setApiKey] = useState("");
     const [loading, setLoading] = useState(false);
-   
+
     const [emailGlobalVariable, setEmailGlobalVariable] = useEmailGlobalVariable('email', '');
 
     const handleFileChange = (event) => {
@@ -72,7 +72,7 @@ function JobScoreDetail({ onResult }) {
         });
   
         const result = await response.json();
-        console.log(result);
+        //console.log(result);
         //setData(result);
         onResult(result);
       } catch (error) {
@@ -138,7 +138,7 @@ function JobScoreDetail({ onResult }) {
                         </label>
                         <textarea
                             id="text-box"
-                            value={text}
+                            value={text == '' ? description : text}
                             onChange={handleTextChange}
                             rows="8"
                             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

@@ -63,7 +63,7 @@ const HistoryList = ({ onSelect }) => {
         History
       </button>
       {isOpen && items && (
-        <ul className="absolute left-0 w-64 mt-2 max-h-124 border border-gray-200 rounded bg-white z-10 overflow-y-auto">
+        <ul className="absolute left-0 w-64 mt-2 h-screen border border-gray-200 rounded bg-white z-10 overflow-y-auto">
           {items && items.map((item, index) => (
             <li  
               key={item.score_id} 

@@ -277,7 +277,16 @@ class MongoDB:
             results = collection.aggregate(pipeline)
             docs_list = list(results)
             
-            return docs_list[0]['score_object']
+            # Convert the list of dictionaries to a pandas DataFrame
+            df = pd.DataFrame(docs_list)
+            #print(len(df))
+            df = df.fillna('')
+            df['orgid'] = df['_id'].astype(str)
+            df = df.drop(columns=['_id'])
+            
+            result = df.to_dict(orient="records")
+
+            return result[0]
 
         except Exception as e:
             logging.error(e)

@@ -7,6 +7,7 @@ import Spinner from '../components/Spinner';
 const JobsScoreDetailPage = () => {
   const [responseData, setData] = useState();
   const [loading, setLoading] = useState(false);
+  const [desc, setDesc] = useState("");
 
   const handleSelect = async (item) => {
     const formData = new FormData();
@@ -29,8 +30,13 @@ const JobsScoreDetailPage = () => {
       }
 
       const data = await response.json();
-      //console.log(data);
-      setData(data);
+
+      let result = {
+        "Gemini Result" : data.result.score_object
+      }
+      setData(result);
+      setDesc(data.result.job_desc);
+
 
     } catch (error) {
       console.error('Error fetching data:', error);
@@ -50,7 +56,7 @@ const JobsScoreDetailPage = () => {
         </div>
       )}
       <div className={`flex flex-col w-full`}>
-        <JobScoreDetail onResult={setData} />
+        <JobScoreDetail description={desc} onResult={setData}/>
         {loading ? (
                     <Spinner loading={loading} />
                 ) : (

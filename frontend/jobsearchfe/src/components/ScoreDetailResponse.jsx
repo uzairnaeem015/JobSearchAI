@@ -27,20 +27,22 @@ function ResultComponent({ data })  {
     }
 
     let { result } = data["Gemini Result"];
-
+    
+    let cleanedJsonString = "";
     if (result === undefined)
     {
         try
         {
-        let cleanedJsonString = String(data["Gemini Result"]);
-        cleanedJsonString = cleanedJsonString.replace("```json", "");
-        cleanedJsonString = cleanedJsonString.replace("```", "");
-        cleanedJsonString = cleanedJsonString.replace(/\n/g, ' ');
-        
-        // Step 2: Parse the JSON string
-        const jsonObject = JSON.parse(cleanedJsonString);
-        
-        result = jsonObject["result"]
+            console.warn("Invalid json response, trying to parsing with javascript");
+            cleanedJsonString = String(data["Gemini Result"]);
+            cleanedJsonString = cleanedJsonString.replace("```json", "");
+            cleanedJsonString = cleanedJsonString.replace("```", "");
+            cleanedJsonString = cleanedJsonString.replace(/\n/g, ' ');
+            
+            // Step 2: Parse the JSON string
+            const jsonObject = JSON.parse(cleanedJsonString);
+            
+            result = jsonObject["result"]
         }
         catch (e)
         {
@@ -49,7 +51,6 @@ function ResultComponent({ data })  {
         }
         
     }
-    
     // if (typeof data === String )
     // {
     //     return (
