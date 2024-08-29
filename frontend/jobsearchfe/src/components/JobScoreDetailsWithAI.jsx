@@ -12,6 +12,10 @@ function JobScoreDetail({ description, onResult }) {
 
     const [emailGlobalVariable, setEmailGlobalVariable] = useEmailGlobalVariable('email', '');
 
+    useEffect(() => {
+      setDescription(description);
+    }, [description]);
+
     const handleFileChange = (event) => {
       const selectedFile = event.target.files[0];
       if (selectedFile && selectedFile.type === "application/pdf") {
@@ -138,7 +142,7 @@ function JobScoreDetail({ description, onResult }) {
                         </label>
                         <textarea
                             id="text-box"
-                            value={text == '' ? description : text}
+                            value={text}
                             onChange={handleTextChange}
                             rows="8"
                             className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"

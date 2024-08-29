@@ -35,7 +35,7 @@ const JobsScoreDetailPage = () => {
         "Gemini Result" : data.result.score_object
       }
       setData(result);
-      setDesc(data.result.job_desc);
+      setDesc(data.result.model + "\n"+ data.result.job_desc);
 
 
     } catch (error) {
