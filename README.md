@@ -2,7 +2,10 @@
 
 [Job Search deployed on Github pages](https://uzairnaeem015.github.io/JobSearchAI/)
 
+[Backend server](https://jobsearchai.onrender.com/)
+
 [GitHub repo](https://github.com/uzairnaeem015/JobSearchAI)
+
 
 ![Job Search Optimization Tool Image 1](Screenshots/image-1.png)
 ![Job Search Optimization Tool Image 2](Screenshots/image-2.png)
@@ -32,14 +35,15 @@ You'll need to upload a PDF resume to perform the search, but rest assured, the 
 - **Deployment:**
   - Frontend: GitHub Pages
   - Backend: Docker on Render
+  - Database: MongoDB
 
 ## Future Work
 
 1. **Enhanced LLM Integration:**
    - Refine Google Gemini prompts for more detailed explanations.
    - Explore integration of local LLMs (e.g., GPT4ALL) for more extensive analysis, despite their current limitations with larger token sizes.
-2. **Database Implementation:**
-   - Introduce a database to store job data for quick access, with a cron job to automate data collection.
+2. **Cron job:**
+   - Introduce a cron job to automate data collection.
 3. **API Development:**
    - Replace web scraping with a robust RESTful API for accessing job data.
 
