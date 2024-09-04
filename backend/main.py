@@ -7,7 +7,7 @@ import shutil
 
 
 from services.jobsServices import ScrapeJobs
-from backend.Helper.PDFHelper import PDF;
+from Helper.PDFHelper import PDF;
 from services.JobScanAIModels import GoogleGemini
 from services.DBService import MongoDB
 
