@@ -34,7 +34,7 @@ function ResultComponent({ data }) {
         try {
             cleanedJsonString = String(data["Gemini Result"]);
             cleanedJsonString = cleanedJsonString.replace("```json", "").replace("```", "").replace(/\n/g, ' ');
-            cleanedJsonString = JSON.stringify(cleanedJsonString);
+            
             const jsonObject = JSON.parse(cleanedJsonString);
             result = jsonObject["result"];
         } catch (e) {
