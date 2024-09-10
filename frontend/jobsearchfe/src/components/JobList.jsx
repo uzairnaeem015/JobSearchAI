@@ -20,7 +20,9 @@ function JobListing({ job }) {
   };
 
   
-  let final_score = ((job.Similarity_score_Gensim + job.similarity_CountVector + job.similarity_TdfVector + job.similarity_sentenceTransformer)/4).toFixed(2);
+  let final_score = ((job.Similarity_score_Gensim + job.similarity_CountVector + 
+                    job.similarity_TdfVector + job.similarity_sentenceTransformer +
+                  job.similarity_matched_keywords + job.similarity_matched_keywords_cosine)/6).toFixed(2);
 
   if (final_score == 0)
   {
@@ -90,6 +92,8 @@ function JobListing({ job }) {
                 <p>Count Vectorization: {job.similarity_CountVector}</p>
                 <p>TFIDF Vectorization: {job.similarity_TdfVector}</p>
                 <p>SentenceTransformer: {job.similarity_sentenceTransformer}</p>
+                <p>Keywords comparison: {job.similarity_matched_keywords}</p>
+                <p>Keywords comparison (cosine): {job.similarity_matched_keywords_cosine}</p>
               </div>
             )}
           </div>

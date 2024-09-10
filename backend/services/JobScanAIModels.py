@@ -114,7 +114,7 @@ class CountAndTdfVector:
             return 0  # Avoid division by zero if there are no keywords to consider
         
         similarity_score = len(common_keywords) / total_considered * 100
-        return similarity_score
+        return round(similarity_score,2)
 
     def cosine_similarity(self, list_a, list_b):
         # Create a set of all unique words from both lists
@@ -134,7 +134,7 @@ class CountAndTdfVector:
         # Compute cosine similarity
         if magnitude_a == 0 or magnitude_b == 0:
             return 0.0  # To avoid division by zero
-        return dot_product / (magnitude_a * magnitude_b)
+        return round((dot_product / (magnitude_a * magnitude_b))*100,2)
 
 
 class Doc2VecGensim:

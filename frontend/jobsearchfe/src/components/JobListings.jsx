@@ -67,7 +67,12 @@ function JobListings() {
             fileInputRef.current.value = '';
         }
     };
-
+        // Determine color based on Similarity_score_Gensim
+    const getScoreColor = (score) => {
+        if (score >= 50) return 'text-green-500';    // High similarity
+        if (score >= 25) return 'text-yellow-500';   // Moderate similarity
+        return 'text-red-500';                       // Low similarity
+    };
     const sendData = async (fetchMore = false) => {
         try {
             if (!title) {
@@ -242,6 +247,7 @@ function JobListings() {
                                 <div>
                                     <h3 className="font-bold">{index + 1}. {job.title}</h3>
                                     <p className="text-sm">{job.company}</p>
+                                    <p className="text-sm">{job.similarity_matched_keywords == 0 ? "" : job.similarity_matched_keywords}</p>
                                 </div>
                             </div>
                         ))}
