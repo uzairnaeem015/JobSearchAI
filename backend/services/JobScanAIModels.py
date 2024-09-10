@@ -17,6 +17,9 @@ import logging
 import os
 from dotenv import load_dotenv
 
+from collections import Counter
+from math import sqrt
+
 # Load environment variables from .env file
 load_dotenv()
 
@@ -89,6 +92,49 @@ class CountAndTdfVector:
         cosine_sim = cosine_similarity(tfidf_matrix[0:1], tfidf_matrix)
 
         return round(cosine_sim[0][1]*100,2)
+    
+
+    def calculate_similarity_percentage(list_a, list_b):
+        # Convert lists to sets for easier operations
+        set_a = set(list_a)
+        set_b = set(list_b)
+
+        # Keywords to consider: present in A or both A and B
+        keywords_to_consider = set_a
+        
+        # Find the intersection (present in both lists)
+        common_keywords = set_a.intersection(set_b)
+        
+        # Find keywords in A but not in B
+        a_not_in_b = set_a.difference(set_b)
+
+        # Similarity is based on keywords that are common to both or unique to A
+        total_considered = len(keywords_to_consider)
+        if total_considered == 0:
+            return 0  # Avoid division by zero if there are no keywords to consider
+        
+        similarity_score = len(common_keywords) / total_considered * 100
+        return similarity_score
+
+    def cosine_similarity(list_a, list_b):
+        # Create a set of all unique words from both lists
+        all_keywords = set(list_a).union(set(list_b))
+
+        # Create frequency vectors for both lists
+        vec_a = [list_a.count(keyword) for keyword in all_keywords]
+        vec_b = [list_b.count(keyword) for keyword in all_keywords]
+
+        # Compute dot product of the vectors
+        dot_product = sum(a * b for a, b in zip(vec_a, vec_b))
+
+        # Compute magnitudes of the vectors
+        magnitude_a = sqrt(sum(a**2 for a in vec_a))
+        magnitude_b = sqrt(sum(b**2 for b in vec_b))
+
+        # Compute cosine similarity
+        if magnitude_a == 0 or magnitude_b == 0:
+            return 0.0  # To avoid division by zero
+        return dot_product / (magnitude_a * magnitude_b)
 
 
 class Doc2VecGensim:

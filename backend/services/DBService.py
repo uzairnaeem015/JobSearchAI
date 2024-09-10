@@ -33,17 +33,47 @@ last_id = ObjectId("000000000000000000000000")
 
 
 class MongoDB:
+
+    # Class attribute (shared across all instances)
+    skill_keywords_set = set()
+
     def __init__(self):
         self.client = MongoClient(uri, server_api=ServerApi('1'))
         
+        
         try:
             self.db = self.client[db_name]
+
+            if not MongoDB.skill_keywords_set:
+                MongoDB.skill_keywords_set = self.initialize_skill_keywords_set()
             self.client.admin.command('ping')
             logging.info("Pinged your deployment. You successfully connected to MongoDB!")
         except Exception as e:
             logging.error(e)
             raise e
         
+    def initialize_skill_keywords_set(self):
+        # Initialize the set with some values (customize as needed)
+        keywords_set = set()
+
+        collection = self.db['jobscore']
+        for document in collection.find():
+            if document is not None:
+                score_object = document.get("score_object", None)
+                if score_object and isinstance(score_object, dict):
+                    result = score_object.get("result", None)
+                    if result and isinstance(result, dict):
+                        missing_keywords = result.get("missing_keywords", None)
+                        if missing_keywords and isinstance(missing_keywords, list):
+                            keywords_set.update(missing_keywords)
+                        All_keywords_in_jd = result.get("All_keywords_in_jd", None)
+                        if All_keywords_in_jd and isinstance(All_keywords_in_jd, list):
+                            keywords_set.update(All_keywords_in_jd)
+        return keywords_set
+    
+    def get_skill_keywords_set(self):
+        # Method to access the shared set
+        return MongoDB.skill_keywords_set
 
     def insert_new_user(self, name, email, password):
         collection = self.db['users']

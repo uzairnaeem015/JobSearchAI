@@ -70,6 +70,7 @@ class ScrapeJobs:
             jobs = self.mongoDB.fetch_jobs(jobs, self.title, self.site, self.location, last_id)
 
         
+        
         if resume_content:
             Doc2VecGensim_model = Doc2VecGensim('./models/cv_job_maching.model')
             sentenceTransformer_model = Sentence_Transformer()
@@ -83,10 +84,16 @@ class ScrapeJobs:
             else:
                 resume_text_pre_processed = resume_text_pre
 
+
+            matched_keywords = text_Preprocessor.find_keywords_in_document(list(self.mongoDB.get_skill_keywords_set), resume_content)
+            
+
             similarity_Doc2VecGensim_model = [] 
             similarity_sentenceTransformer_model = [] 
             similarity_CountVector_model = [] 
             similarity_TdfVector_model = [] 
+            similarity_matched_keywords = [] 
+            similarity_matched_keywords_cosine  = []
 
             # Iterate through each row and calculate the new column value
             for index, row in jobs.iterrows():
@@ -105,11 +112,20 @@ class ScrapeJobs:
 
                 sim_score_4 = CountAndTdfVector_model.tfidf_similarity(resume_text_pre_processed, job_desc_pre_processed) 
                 similarity_TdfVector_model.append(sim_score_4)
+
+                matched_keywords_jd = text_Preprocessor.find_keywords_in_document(list(self.mongoDB.get_skill_keywords_set), job_desc)
+                sim_score_5 = CountAndTdfVector_model.calculate_similarity_percentage(matched_keywords_jd, matched_keywords) 
+                similarity_matched_keywords.append(sim_score_5)
+
+                sim_score_6 = CountAndTdfVector_model.cosine_similarity(matched_keywords_jd, matched_keywords) 
+                similarity_matched_keywords_cosine.append(sim_score_6)
         
             jobs['Similarity_score_Gensim'] = similarity_Doc2VecGensim_model
             jobs['similarity_sentenceTransformer'] = similarity_sentenceTransformer_model
             jobs['similarity_CountVector'] = similarity_CountVector_model
             jobs['similarity_TdfVector'] = similarity_TdfVector_model
+            jobs['similarity_matched_keywords'] = similarity_matched_keywords 
+            jobs['similarity_matched_keywords_cosine'] = similarity_matched_keywords_cosine 
         else:
             row_count = len(jobs)
             listofzeroes = [0] * row_count
@@ -117,6 +133,8 @@ class ScrapeJobs:
             jobs['similarity_sentenceTransformer'] = listofzeroes
             jobs['similarity_CountVector'] = listofzeroes
             jobs['similarity_TdfVector'] = listofzeroes
+            jobs['similarity_matched_keywords'] = listofzeroes
+            jobs['similarity_matched_keywords_cosine'] = listofzeroes 
 
 
 
