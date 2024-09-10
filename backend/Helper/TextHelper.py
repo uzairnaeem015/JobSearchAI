@@ -28,7 +28,7 @@ class TextPreprocessor:
         return filtered_sentence
     
 
-    def find_keywords_in_document(keywords, document_text):
+    def find_keywords_in_document(self, keywords, document_text):
         # Convert the document text to lowercase for case-insensitive matching
         document_text = document_text.lower()
 

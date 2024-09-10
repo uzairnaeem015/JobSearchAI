@@ -94,7 +94,7 @@ class CountAndTdfVector:
         return round(cosine_sim[0][1]*100,2)
     
 
-    def calculate_similarity_percentage(list_a, list_b):
+    def calculate_similarity_percentage(self, list_a, list_b):
         # Convert lists to sets for easier operations
         set_a = set(list_a)
         set_b = set(list_b)
@@ -116,7 +116,7 @@ class CountAndTdfVector:
         similarity_score = len(common_keywords) / total_considered * 100
         return similarity_score
 
-    def cosine_similarity(list_a, list_b):
+    def cosine_similarity(self, list_a, list_b):
         # Create a set of all unique words from both lists
         all_keywords = set(list_a).union(set(list_b))
 

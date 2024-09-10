@@ -69,6 +69,8 @@ class MongoDB:
                         All_keywords_in_jd = result.get("All_keywords_in_jd", None)
                         if All_keywords_in_jd and isinstance(All_keywords_in_jd, list):
                             keywords_set.update(All_keywords_in_jd)
+
+        logging.info("Keyword list initialized")
         return keywords_set
     
     def get_skill_keywords_set(self):
